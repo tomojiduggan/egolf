@@ -4,6 +4,7 @@ File storing all the props class used in game
 import numpy as np
 from Global_Var import *
 from physics.phys_utils import *
+# from main import screen
 import pygame
 
 
@@ -76,6 +77,15 @@ class WALL(REGION):
                 overlap = np.linalg.norm(player.position - self.rect.center) - player.radius
                 player.position += normal * overlap  # Push player out of the wall
 
+    def draw(self, screen):
+        image = pygame.image.load(self.image_path)
+        # pygame.transform.scale_by(image, )
+        image = pygame.transform.scale(image, (30, 30))
+        screen.blit(image, image.get_rect(center=self.position))
+    # def update(self):
+    #     return
+
+
 
 class WIRE(Props):
     def __init__(self, start, end, current):  # start and end are positions of the two ends of the wire
@@ -109,10 +119,14 @@ class WIRE(Props):
 class POINT_CHARGE(Props):
     def __init__(self, position, charge, movable):  # position is numpy array length 2
         super().__init__(position, movable)
-        self.charge = charge
+        self.charge = charge * Q
         self.velocity = np.zeros(2)
         self.acceleration = np.zeros(2)
         self.radius = 30
+        self.image_path = "img/charge.jpg"
+        self.has_E = True
+        if(movable):
+            self.has_B = True
 
     def e_field(self, r):
         return self.charge * (r - self.position) / (np.linalg.norm(r - self.position))
@@ -120,23 +134,23 @@ class POINT_CHARGE(Props):
     def b_field(self, r):
         if(not self.movable):
             return 0
-        return self.charge * np.cross(self.velocity, self.position - r) / ()
+        return self.charge * np.cross(self.velocity, self.position - r) / (np.linalg.norm(self.position - r) ** 3)
 
     def get_force(self):
         e_force = self.charge * net_E(self.position, self.prop_id)
-        b = net_B(self.position)
+        b = net_B(self.position, self.prop_id)
         b_force = np.array([self.velocity[1] * b, -self.velocity[0] * b])
 
         return e_force + b_force
 
-    def update(self, force):  # force is np array
+    def update(self):  # force is np array
         if (not self.movable):
-            print("Warning: Trying to move non-movable")
             return
+        force = self.get_force()
 
-        self.acceleration = force  # say mass is 1
-        self.velocity += self.acceleration * DELTA_T
-        self.position += self.velocity * DELTA_T
+        self.acceleration = force # say mass is 1
+        self.velocity = self.velocity + self.acceleration * DELTA_T
+        self.position = self.position + self.velocity * DELTA_T
 
     def handle_collision(self, player):
         #Anihnation

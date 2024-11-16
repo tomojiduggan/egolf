@@ -21,6 +21,7 @@ from pygame.locals import (
 
 # Initialize pygame
 pygame.init()
+pygame.display.set_caption('E-Golf!')
 
 # Define constants for the screen width and height
 SCREEN_WIDTH = Global_Var.SCREEN_WIDTH
@@ -34,15 +35,19 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # TESTING
 myCharge = POINT_CHARGE(np.array([40, 40]), 1, True)
-staticCharge = POINT_CHARGE(np.array([200, 40]), 1, False)
+staticCharge = POINT_CHARGE(np.array([200, 200]), 1, False)
 print(myCharge.get_force())
+myCharge.velocity = np.array([18, 12])
 
-myWire = WIRE(np.zeros(2), np.array([100, 0]), 1)
-print(myWire.b_field(np.array([50, 20])))
-print(myWire.b_field(np.array([50, -20])))
+# myWire = WIRE(np.zeros(2), np.array([100, 0]), 1)
+# print(myWire.b_field(np.array([50, 20])))
+# print(myWire.b_field(np.array([50, -20])))
 
 
-
+def run():
+    for object in ALL_PROPS:
+        object.update()
+        object.draw(screen)
 
 # Run until the user asks to quit
 running = True
@@ -55,11 +60,12 @@ while running:
 
     # Fill the background with white
     screen.fill((255, 255, 255))
+    run()
 
-    #visualize_E(screen, positions, charges)
 
+    # Draw every 
     # Draw a solid blue circle in the center
-    pygame.draw.circle(screen, (0, 0, 255), (600, 400), 20)
+    # pygame.draw.circle(screen, (0, 0, 255), (600, 400), 20)
     # myCharge.update(force)
 
     # Flip the display

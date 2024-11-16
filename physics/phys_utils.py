@@ -4,7 +4,8 @@ Contains all the function related to physics calculation
 
 import numpy as np
 import Global_Var as Global_Var
-from physics.props import *
+from Global_Var import *
+# from physics.props import *
 
 
 def get_E_level(poi):
@@ -21,7 +22,7 @@ def net_E(r, id):
     sum_E = np.zeros(2)
     for object in ALL_PROPS:
         if(object.prop_id == id):
-            pass
+            continue
         
         if(object.has_E):
             # If object id is same as input id, then ignore
@@ -30,11 +31,11 @@ def net_E(r, id):
         # E-field of other objects...
 
 # Take magnetic field without prop with id
-def net_B(r):
+def net_B(r, id):
     sum_B = 0
     for object in ALL_PROPS:
         if(object.prop_id == id):
-            pass
+            continue
         if(object.has_B):
             sum_B += object.b_field(r)
 

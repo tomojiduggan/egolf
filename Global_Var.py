@@ -8,7 +8,7 @@ GRID_SPACING = 40
 
 DELTA_T = 0.05
 
-Q = 10
+Q = 1.2
 
 ALL_PROPS = []
 
