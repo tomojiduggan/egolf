@@ -1,4 +1,6 @@
 # Import the pygame module
+import Global_Var
+
 import pygame
 import numpy as np
 import gc
@@ -19,8 +21,8 @@ from pygame.locals import (
 pygame.init()
 
 # Define constants for the screen width and height
-SCREEN_WIDTH = 1200
-SCREEN_HEIGHT = 800
+SCREEN_WIDTH = Global_Var.SCREEN_WIDTH
+SCREEN_HEIGHT = Global_Var.SCREEN_HEIGHT
 
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
