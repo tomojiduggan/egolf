@@ -35,13 +35,13 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # TESTING
 myCharge = POINT_CHARGE(np.array([40, 40]), 1, True)
-staticCharge = POINT_CHARGE(np.array([50, 40]), 1, False)
+staticCharge = POINT_CHARGE(np.array([200, 200]), 1, False)
 print(myCharge.get_force())
-myCharge.velocity = np.array([1, 0])
+myCharge.velocity = np.array([18, 12])
 
-myWire = WIRE(np.zeros(2), np.array([100, 0]), 1)
-print(myWire.b_field(np.array([50, 20])))
-print(myWire.b_field(np.array([50, -20])))
+# myWire = WIRE(np.zeros(2), np.array([100, 0]), 1)
+# print(myWire.b_field(np.array([50, 20])))
+# print(myWire.b_field(np.array([50, -20])))
 
 
 def run():

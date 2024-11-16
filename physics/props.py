@@ -59,10 +59,13 @@ class WIRE(Props):
 class POINT_CHARGE(Props):
     def __init__(self, position, charge, movable):  # position is numpy array length 2
         super().__init__(position, movable)
-        self.charge = charge
+        self.charge = charge * Q
         self.velocity = np.zeros(2)
         self.acceleration = np.zeros(2)
         self.image_path = "img/charge.jpg"
+        self.has_E = True
+        if(movable):
+            self.has_B = True
 
     def e_field(self, r):
         return self.charge * (r - self.position) / (np.linalg.norm(r - self.position))
@@ -74,7 +77,7 @@ class POINT_CHARGE(Props):
 
     def get_force(self):
         e_force = self.charge * net_E(self.position, self.prop_id)
-        b = net_B(self.position)
+        b = net_B(self.position, self.prop_id)
         b_force = np.array([self.velocity[1] * b, -self.velocity[0] * b])
 
         return e_force + b_force
@@ -84,7 +87,7 @@ class POINT_CHARGE(Props):
             return
         force = self.get_force()
 
-        self.acceleration = force  # say mass is 1
+        self.acceleration = force # say mass is 1
         self.velocity = self.velocity + self.acceleration * DELTA_T
         self.position = self.position + self.velocity * DELTA_T
 
