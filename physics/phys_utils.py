@@ -7,7 +7,6 @@ import Global_Var as Global_Var
 from physics.props import *
 
 
-
 def get_E_level(poi):
     # Get all field except the player
     return net_E(poi, -1)
@@ -21,11 +20,12 @@ def net_E(r, id):
     """
     sum_E = np.zeros(2)
     for object in ALL_PROPS:
-        if isinstance(object, POINT_CHARGE):
-            # ignore the e field of the moving charge
-            # assume there is only one moving charge
-            if(not object.movable):
-                sum_E += object.e_field(r)
+        if(object.prop_id == id):
+            pass
+        
+        if(object.has_E):
+            # If object id is same as input id, then ignore
+            sum_E += object.e_field(r)
     return sum_E
         # E-field of other objects...
 
@@ -33,6 +33,9 @@ def net_E(r, id):
 def net_B(r):
     sum_B = 0
     for object in ALL_PROPS:
-        if isinstance(object, WIRE):
+        if(object.prop_id == id):
+            pass
+        if(object.has_B):
             sum_B += object.b_field(r)
+
     return sum_B

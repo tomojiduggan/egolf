@@ -4,6 +4,8 @@ File storing all the props class used in game
 import numpy as np
 from Global_Var import *
 from physics.phys_utils import *
+import pygame
+
 
 
 class Props(object):
@@ -78,7 +80,68 @@ class POINT_CHARGE(Props):
         self.velocity += self.acceleration * DELTA_T
         self.position += self.velocity * DELTA_T
 
+
 class PLAYER(POINT_CHARGE):
     def __init__(self, position):
         super().__init__(position, PLAYER_CHARGE, True)
         self.prop_id = -1 #Special ID for player
+
+class SOLENOID(Props):
+    def __init__(self, num_loops, current, direction, position,image_path):
+        self.num_loops = num_loops
+        self.current = current
+        self.direction = np.array(direction) / np.linalg.norm(direction)  # Normalize the direction vector
+        self.position = list(position)  # Convert to list for mutability
+        self.image = pygame.image.load(image_path)
+        self.rect = self.image.get_rect(topleft=self.position)
+        self.length = self.rect.width  # Assuming the solenoid is a rectangle
+        self.movable = True
+        self.is_dragging = False
+
+    def draw(self, screen):
+        """Draw the solenoid on the screen."""
+        screen.blit(self.image, self.rect)
+
+    def handle_event(self, event):
+        """Handle mouse events for dragging."""
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.is_dragging = True
+                self.offset_x = self.rect.x - event.pos[0]
+                self.offset_y = self.rect.y - event.pos[1]
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            self.is_dragging = False
+
+        elif event.type == pygame.MOUSEMOTION:
+            if self.is_dragging:
+                self.rect.x = event.pos[0] + self.offset_x
+                self.rect.y = event.pos[1] + self.offset_y
+                self.position = [self.rect.x, self.rect.y]
+
+    def magnetic_field(self, point):
+        """
+        Calculate the magnetic field at a given point using the short solenoid approximation.
+
+        :param point: A 3D numpy array [x, y, z].
+        :return: Magnetic field vector as a numpy array [Bx, By, Bz].
+        """
+        # mu_0 = 4 * np.pi * 1e-7  # Magnetic constant (T·m/A)
+        mu_0 = 1e-3
+        n = self.num_loops / self.length  # Turns per unit length
+
+        # Convert point to a numpy array and find relative position
+        point = np.array(point)
+        dx, dy = point[:2] - self.position[:2]
+        r = np.sqrt(dx**2 + dy**2)  # Distance in 2D plane
+
+        # Short solenoid approximation for field strength
+        B_magnitude = mu_0 * n * self.current / 2
+
+        # Decay field for global effect (outside solenoid)
+        decay_factor = self.length / (self.length + r)  # Approximate global influence
+        B_magnitude *= decay_factor
+
+        # Assume the field is along z-axis (out of plane)
+        B_field = np.array([0, 0, B_magnitude])
+        return B_field

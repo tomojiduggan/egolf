@@ -1,5 +1,5 @@
-# Import the pygame module
 import Global_Var as Global_Var
+from physics.phys_utils import *
 
 import pygame
 import numpy as np
@@ -30,7 +30,6 @@ DELTA_T = Global_Var.DELTA_T
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-            
 
 
 # TESTING
