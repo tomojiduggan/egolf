@@ -34,10 +34,9 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 # TESTING
-myCharge = POINT_CHARGE(np.array([40, 40]), -1, True)
+player = PLAYER(np.array([40, 40]))
 staticCharge = POINT_CHARGE(np.array([200, 200]), 1, False)
-print(myCharge.get_force())
-myCharge.velocity = np.array([18, 12])
+player.velocity = np.array([18, 12])
 
 # myWire = WIRE(np.zeros(2), np.array([100, 0]), 1)
 # print(myWire.b_field(np.array([50, 20])))
@@ -47,6 +46,7 @@ myCharge.velocity = np.array([18, 12])
 def run():
     for object in ALL_PROPS:
         object.update()
+        player.handle_collision()
         object.draw(screen)
 
 # Run until the user asks to quit

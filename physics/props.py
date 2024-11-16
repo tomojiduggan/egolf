@@ -77,11 +77,6 @@ class WALL(REGION):
                 overlap = np.linalg.norm(player.position - self.rect.center) - player.radius
                 player.position += normal * overlap  # Push player out of the wall
 
-    def draw(self, screen):
-        image = pygame.image.load(self.image_path)
-        # pygame.transform.scale_by(image, )
-        image = pygame.transform.scale(image, (30, 30))
-        screen.blit(image, image.get_rect(center=self.position))
     # def update(self):
     #     return
 
@@ -128,6 +123,12 @@ class POINT_CHARGE(Props):
         if(movable):
             self.has_B = True
 
+    def draw(self, screen):
+        image = pygame.image.load(self.image_path)
+        # pygame.transform.scale_by(image, )
+        image = pygame.transform.scale(image, (30, 30))
+        screen.blit(image, image.get_rect(center=self.position))
+
     def e_field(self, r):
         return self.charge * (r - self.position) / (np.linalg.norm(r - self.position))
 
@@ -142,7 +143,6 @@ class POINT_CHARGE(Props):
         b_force = np.array([self.velocity[1] * b, -self.velocity[0] * b])
         em_force = e_force + b_force
         if(np.max(self.velocity) == 0 and np.linalg.norm(em_force) < FRICTION):
-            print("Zero!")
             return np.array([0, 0])
         else:
             return em_force - FRICTION * self.velocity / np.linalg.norm(self.velocity)
@@ -183,7 +183,9 @@ class PLAYER(POINT_CHARGE):
                     self.radius * 2,
                 )
                 if obj_rect.colliderect(player_rect):
-                    p.handle_collision(self)
+                    print("Collision")
+                    a = self
+                    p.handle_collision(1, 2, 3)
             elif isinstance(p, POINT_CHARGE):
                 # Circular collision check
                 distance = np.linalg.norm(self.position - p.position)
