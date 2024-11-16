@@ -5,7 +5,6 @@ import numpy as np
 from Global_Var import *
 import pygame
 
-id_track = 0
 
 def get_new_id():
     id_track += 1
@@ -52,7 +51,7 @@ class WIRE(Props):
 
 class POINT_CHARGE(Props):
     def __init__(self, position, charge, movable):  # position is numpy array length 2
-        super().__init__(position, movable, get_new_id())
+        super().__init__(position, movable)
         self.charge = charge
         self.velocity = np.zeros(2)
         self.acceleration = np.zeros(2)
