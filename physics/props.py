@@ -114,7 +114,7 @@ class SOLENOID(Props):
                 self.rect.y = event.pos[1] + self.offset_y
                 self.position = [self.rect.x, self.rect.y]
 
-    def magnetic_field(self, point):
+    def b_field(self, point):
         """
         Calculate the magnetic field at a given point using the short solenoid approximation.
 
