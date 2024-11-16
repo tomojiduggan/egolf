@@ -33,15 +33,42 @@ game_state = "title"
 # Load background image
 background_image = pygame.image.load("pictures/screen_cov.webp")  # Replace with your file path
 background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))  # Resize to fit the screen
-
 start_button_image = pygame.image.load("pictures/start_btn.png")
+free_design_image = pygame.image.load("pictures/place_btn.PNG")
 start_button = button.Button((SCREEN_WIDTH - start_button_image.get_width() * 0.5)// 2, SCREEN_HEIGHT-70, start_button_image, 0.5)
+start_game_image = pygame.image.load("pictures/start_btn.png")
+
+# add_wire_image = pygame.image.load('pictures/add_wire.png')
+# add_charge_image = pygame.image.load('pictures/add_charge.png')
+# add_solenoid_image = pygame.image.load('pictures/add_solenoid.png')
+# add_block_image = pygame.image.load('pictures/add_block.png')
+# add_quit_image = pygame.image.load('pictures/quit.png')
+
+
 def draw_title_screen():
     """Draw the title screen with a Start button."""
+    global game_state 
     screen.blit(background_image, (0, 0))  # Draw the background
     if start_button.draw(screen):  # If the button is clicked
-        return True
-    return False
+        game_state = 'start_page'
+
+def draw_start_page():
+    """Draw the start page."""
+    global game_state  
+    screen.fill(WHITE)
+    new_game = button.Button(SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2, start_game_image, 0.5)
+    free_design = button.Button(SCREEN_WIDTH // 2 + 50, SCREEN_HEIGHT // 2 , free_design_image, 0.5)
+    if new_game.draw(screen):
+        game_state = "game"
+    if free_design.draw(screen):
+        game_state = "free_design"
+
+def free_design():
+    """Draw the free design screen."""
+    screen.fill(WHITE)
+    free_design_text = font.render("Free Design Screen", True, BLACK)
+    free_design_rect = free_design_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+    screen.blit(free_design_text, free_design_rect)
 
 def draw_game():
     """Draw the game screen."""
@@ -59,11 +86,13 @@ while running:
 
     # Update screen based on the current state
     if game_state == "title":
-        if draw_title_screen():
-            game_state = "game"  # Transition to the game state
-
+        draw_title_screen()
+    elif game_state == "start_page":
+        draw_start_page()
     elif game_state == "game":
         draw_game()
+    elif game_state == "free_design":
+        free_design()
 
     # Update the display
     pygame.display.flip()
