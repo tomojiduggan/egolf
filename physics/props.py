@@ -4,6 +4,7 @@ File storing all the props class used in game
 import numpy as np
 from Global_Var import *
 from physics.phys_utils import *
+# from main import screen
 import pygame
 
 
@@ -17,7 +18,13 @@ class Props(object):
         self.has_B = False
         ALL_PROPS.append(self)
 
-
+    def draw(self, screen):
+        image = pygame.image.load(self.image_path)
+        # pygame.transform.scale_by(image, )
+        image = pygame.transform.scale(image, (30, 30))
+        screen.blit(image, image.get_rect(center=self.position))
+    # def update(self):
+    #     return
 
 
 class WIRE(Props):
@@ -55,6 +62,7 @@ class POINT_CHARGE(Props):
         self.charge = charge
         self.velocity = np.zeros(2)
         self.acceleration = np.zeros(2)
+        self.image_path = "img/charge.jpg"
 
     def e_field(self, r):
         return self.charge * (r - self.position) / (np.linalg.norm(r - self.position))
@@ -62,7 +70,7 @@ class POINT_CHARGE(Props):
     def b_field(self, r):
         if(not self.movable):
             return 0
-        return self.charge * np.cross(self.velocity, self.position - r) / ()
+        return self.charge * np.cross(self.velocity, self.position - r) / (np.linalg.norm(self.position - r) ** 3)
 
     def get_force(self):
         e_force = self.charge * net_E(self.position, self.prop_id)
@@ -71,14 +79,14 @@ class POINT_CHARGE(Props):
 
         return e_force + b_force
 
-    def update(self, force):  # force is np array
+    def update(self):  # force is np array
         if (not self.movable):
-            print("Warning: Trying to move non-movable")
             return
+        force = self.get_force()
 
         self.acceleration = force  # say mass is 1
-        self.velocity += self.acceleration * DELTA_T
-        self.position += self.velocity * DELTA_T
+        self.velocity = self.velocity + self.acceleration * DELTA_T
+        self.position = self.position + self.velocity * DELTA_T
 
 
 class PLAYER(POINT_CHARGE):

@@ -4,7 +4,8 @@ Contains all the function related to physics calculation
 
 import numpy as np
 import Global_Var as Global_Var
-from physics.props import *
+from Global_Var import *
+# from physics.props import *
 
 
 def get_E_level(poi):
