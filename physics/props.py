@@ -42,44 +42,6 @@ class WALL(REGION):
     def __init__(self, tl, tr, br, bl):
         super().__init__(tl, tr, br, bl)
 
-    def handle_collision(self, player):
-        """
-        Handle the collision with the player, applying conservation of momentum.
-        """
-        # Player is always a electron, so we create rectangular bounding box first for collision
-        # Check if there's a vertical (horizontal wall) collision
-        if self.rect.colliderect(pygame.Rect(
-            player.position[0] - player.radius,
-            player.position[1] - player.radius,
-            player.radius * 2,
-            player.radius * 2
-        )):
-            # Check if it’s a horizontal wall collision (player moving vertically)
-            # Determine if it's a horizontal or vertical wall collision
-            if player.position[0] < self.rect.centerx:  # Left wall
-                normal = np.array([1, 0])  # Normal vector for a vertical wall on the left
-            else:  # Right wall
-                normal = np.array([-1, 0])  # Normal vector for a vertical wall on the right
-
-            if player.position[1] < self.rect.centery:  # Upper wall
-                normal = np.array([0, 1])  # Normal vector for a horizontal wall at the top
-            else:  # Bottom wall
-                normal = np.array([0, -1])  # Normal vector for a horizontal wall at the bottom
-
-            # Calculate the perpendicular component of the velocity (normal component)
-            velocity_normal_component = np.dot(player.velocity, normal) * normal
-
-            # Reverse the normal component of the velocity (bounce effect)
-            player.velocity -= 2 * velocity_normal_component
-
-            # Ensure player is no longer inside the wall by adjusting their position
-            if np.dot(player.velocity, normal) < 0:  # If player is moving towards the wall
-                overlap = np.linalg.norm(player.position - self.rect.center) - player.radius
-                player.position += normal * overlap  # Push player out of the wall
-
-    # def update(self):
-    #     return
-
 
 
 class WIRE(Props):
@@ -117,7 +79,7 @@ class POINT_CHARGE(Props):
         self.charge = charge * Q
         self.velocity = np.zeros(2)
         self.acceleration = np.zeros(2)
-        self.radius = 30
+        self.radius = 15
         self.image_path = "img/charge.jpg"
         self.has_E = True
         if(movable):
@@ -156,17 +118,18 @@ class POINT_CHARGE(Props):
         self.velocity = self.velocity + self.acceleration * DELTA_T
         self.position = self.position + self.velocity * DELTA_T
 
-    def handle_collision(self, player):
-        #Anihnation
-        #TODO release the two object
-        print("Collision detected")
-
 
 
 class PLAYER(POINT_CHARGE):
     def __init__(self, position):
         super().__init__(position, PLAYER_CHARGE, True)
         self.prop_id = -1 #Special ID for player
+        self.rect = pygame.Rect(
+                    self.position[0] - self.radius,
+                    self.position[1] - self.radius,
+                    self.radius * 2,
+                    self.radius * 2,
+                )
 
     def handle_collisions(self):
         """
@@ -174,23 +137,35 @@ class PLAYER(POINT_CHARGE):
         """
         for p in ALL_PROPS:
             if isinstance(p, WALL):
-                # Rectangular collision check
-                obj_rect = p.rect
-                player_rect = pygame.Rect(
-                    self.position[0] - self.radius,
-                    self.position[1] - self.radius,
-                    self.radius * 2,
-                    self.radius * 2,
-                )
-                if obj_rect.colliderect(player_rect):
-                    print("Collision")
-                    a = self
-                    p.handle_collision(1, 2, 3)
-            elif isinstance(p, POINT_CHARGE):
+                if p.rect.colliderect(self.rect):
+                    # Determine if it's a horizontal or vertical wall collision
+                    if self.position[0] < p.rect.centerx:  # Left wall
+                        normal = np.array([1, 0])  # Normal vector for a vertical wall on the left
+                    else:  # Right wall
+                        normal = np.array([-1, 0])  # Normal vector for a vertical wall on the right
+
+                    if self.position[1] < p.rect.centery:  # Upper wall
+                        normal = np.array([0, 1])  # Normal vector for a horizontal wall at the top
+                    else:  # Bottom wall
+                        normal = np.array([0, -1])  # Normal vector for a horizontal wall at the bottom
+
+                    # Calculate the perpendicular component of the velocity (normal component)
+                    velocity_normal_component = np.dot(self.velocity, normal) * normal
+
+                    # Reverse the normal component of the velocity (bounce effect)
+                    self.velocity -= 2 * velocity_normal_component
+
+                    # Ensure player is no longer inside the wall by adjusting their position
+                    if np.dot(self.velocity, normal) < 0:  # If player is moving towards the wall
+                        overlap = np.linalg.norm(self.position - self.rect.center) - self.radius
+                        self.position += normal * overlap  # Push player out of the wall
+
+            elif isinstance(p, POINT_CHARGE) and p.prop_id != -1:
                 # Circular collision check
                 distance = np.linalg.norm(self.position - p.position)
-                if distance <= self.radius + p.radius:
-                    p.handle_collision(self)
+                if distance - 2 * self.radius <= 0:
+                    print("Collision detected", p.position)
+
 
 class SOLENOID(Props):
     def __init__(self, num_loops, current, direction, position, image_path):

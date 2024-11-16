@@ -46,7 +46,7 @@ player.velocity = np.array([18, 12])
 def run():
     for object in ALL_PROPS:
         object.update()
-        player.handle_collision()
+        player.handle_collisions()
         object.draw(screen)
 
 # Run until the user asks to quit
