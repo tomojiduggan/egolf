@@ -47,13 +47,33 @@ class POINT_CHARGE:
         self.acceleration = force # say mass is 1
         self.velocity += self.acceleration * DELTA_T
         self.position += self.velocity * DELTA_T
+
+class WIRE:
+    def __init__(self, start, end, current): #start and end are positions of the two ends of the wire 
+        self.start = start
+        self.end = end
+        self.current = current
+
+        
+    
+    def current_swap(self, current):
+        self.current *= -1
+
+    
     
 def net_E(r):
     sum_E = np.zeros(2)
     for object in gc.get_objects():
         if isinstance(POINT_CHARGE):
-            sum_E += object.e_field(r)
-        # 
+            # ignore the e field of the moving charge
+            # assume there is only one moving charge
+            if(not object.movable):
+                sum_E += object.e_field(r)
+
+        # E-field of other objects...
+
+def net_B(r):
+    ...
             
 
 myCharge = POINT_CHARGE(np.array([40, 40]), 1, True)
