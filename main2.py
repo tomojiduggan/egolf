@@ -41,6 +41,60 @@ start_game_image = pygame.image.load("pictures/start_btn.png")
 # add_block_image = pygame.image.load('pictures/add_block.png')
 # add_quit_image = pygame.image.load('pictures/quit.png')
 
+# Button dimensions and positions
+button_width, button_height = 200, 50
+
+# Button positions 
+button_positions = {
+    "add_wire": (100, 100),
+    "add_charge": (100, 200),
+    "add_solenoid": (100, 300),
+    "add_block": (100, 400),
+    "add_quit": (100, 500),
+}
+
+# Button text labels
+button_texts = {
+    "add_wire": "Add Wire",
+    "add_charge": "Add Charge",
+    "add_solenoid": "Add Solenoid",
+    "add_block": "Add Block",
+    "add_quit": "Quit",
+}
+
+# Function to draw a button with text
+def draw_button(x, y, width, height, text):
+    pygame.draw.rect(screen, BLACK, (x, y, width, height), 3)  # Button border
+    text_surface = font.render(text, True, BLACK)
+    text_rect = text_surface.get_rect(center=(x + width // 2, y + height // 2))  # Center the text
+    screen.blit(text_surface, text_rect)
+
+# Check if a button is clicked
+def is_button_clicked(x, y, width, height):
+    mouse_pos = pygame.mouse.get_pos()
+    mouse_pressed = pygame.mouse.get_pressed()
+    if x <= mouse_pos[0] <= x + width and y <= mouse_pos[1] <= y + height:
+        if mouse_pressed[0]:  # Left mouse button clicked
+            return True
+    return False
+
+def handle_button_click(button):
+    if button == "add_wire":
+        print("Adding wire...")
+        # Add your functionality for adding wire here
+    elif button == "add_charge":
+        print("Adding charge...")
+        # Add your functionality for adding charge here
+    elif button == "add_solenoid":
+        print("Adding solenoid...")
+        # Add your functionality for adding solenoid here
+    elif button == "add_block":
+        print("Adding block...")
+        # Add your functionality for adding block here
+    elif button == "add_quit":
+        print("Quitting game...")
+        pygame.quit()
+        exit()
 
 # Load game play button images
 restart_img = pygame.image.load('pictures/restart_btn.png', ).convert_alpha()
@@ -53,6 +107,7 @@ B_img = pygame.image.load('pictures/B_btn.png').convert_alpha()
 
 run = True
 paused = False
+
 
 
 # Button functions
@@ -104,6 +159,14 @@ def free_design():
     free_design_text = font.render("Free Design Screen", True, BLACK)
     free_design_rect = free_design_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
     screen.blit(free_design_text, free_design_rect)
+    # Draw buttons on the screen
+    for button, position in button_positions.items():
+        draw_button(position[0], position[1], button_width, button_height, button_texts[button])
+
+    # Check if any button is clicked and handle the action
+    for button, position in button_positions.items():
+        if is_button_clicked(position[0], position[1], button_width, button_height):
+            handle_button_click(button)
 
 def draw_game():
     """Draw the game screen."""
