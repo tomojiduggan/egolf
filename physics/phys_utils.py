@@ -3,7 +3,8 @@ Contains all the function related to physics calculation
 """
 
 import numpy as np
-import Global_Var
+import Global_Var as Global_Var
+from props import *
 
 
 def coulomb_sim_at_poi(positions, charges, poi, unit_vec=False):
@@ -28,10 +29,10 @@ def coulomb_sim_at_poi(positions, charges, poi, unit_vec=False):
     return e_field
 
 
-
-def net_E(r):
+# Take electric field without prop with id
+def net_E(r, id):
     sum_E = np.zeros(2)
-    for object in gc.get_objects():
+    for object in ALL_PROPS:
         if isinstance(object, POINT_CHARGE):
             # ignore the e field of the moving charge
             # assume there is only one moving charge
@@ -40,9 +41,10 @@ def net_E(r):
     return sum_E
         # E-field of other objects...
 
+# Take magnetic field without prop with id
 def net_B(r):
     sum_B = 0
-    for object in gc.get_objects():
+    for object in ALL_PROPS:
         if isinstance(object, WIRE):
             sum_B += object.b_field(r)
     return sum_B

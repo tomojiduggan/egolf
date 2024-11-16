@@ -9,3 +9,4 @@ DELTA_T = 0.05
 
 Q = 10
 
+ALL_PROPS = []
