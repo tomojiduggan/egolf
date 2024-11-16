@@ -1,6 +1,6 @@
-import Global_Var
+import Global_Var as Global_Var
 import numpy as np
-from phys_utils import coulomb_sim_at_poi
+from physics.phys_utils import coulomb_sim_at_poi
 from utils import draw_vector
 
 grid_spacing = Global_Var.GRID_SPACING
