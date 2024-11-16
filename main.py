@@ -92,7 +92,11 @@ def net_E(r):
         # E-field of other objects...
 
 def net_B(r):
-    ...
+    sum_B = 0
+    for object in gc.get_objects():
+        ...
+
+
             
 
 myCharge = POINT_CHARGE(np.array([40, 40]), 1, True)
@@ -111,8 +115,8 @@ while running:
     screen.fill((255, 255, 255))
 
     # Draw a solid blue circle in the center
-    # myCharge.update(force)
     pygame.draw.circle(screen, (0, 0, 255), (600, 400), 20)
+    # myCharge.update(force)
 
     # Flip the display
     pygame.display.flip()
