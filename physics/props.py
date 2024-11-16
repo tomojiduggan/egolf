@@ -3,21 +3,19 @@ File storing all the props class used in game
 """
 import numpy as np
 from Global_Var import *
-
-id_track = 0
-
-def get_new_id():
-    id_track += 1
-    return id_track
+from physics.phys_utils import *
 
 
 class Props(object):
     def __init__(self, position, movable):
         self.position = position
         self.movable = movable
-        self.prop_id = get_new_id()
-
+        self.prop_id = len(ALL_PROPS)
+        self.has_E = False
+        self.has_B = False
         ALL_PROPS.append(self)
+
+
 
 
 class WIRE(Props):
@@ -51,7 +49,7 @@ class WIRE(Props):
 
 class POINT_CHARGE(Props):
     def __init__(self, position, charge, movable):  # position is numpy array length 2
-        super().__init__(position, movable, get_new_id())
+        super().__init__(position, movable)
         self.charge = charge
         self.velocity = np.zeros(2)
         self.acceleration = np.zeros(2)
@@ -65,7 +63,7 @@ class POINT_CHARGE(Props):
         return self.charge * np.cross(self.velocity, self.position - r) / ()
 
     def get_force(self):
-        e_force = self.charge * net_E(self.position)
+        e_force = self.charge * net_E(self.position, self.prop_id)
         b = net_B(self.position)
         b_force = np.array([self.velocity[1] * b, -self.velocity[0] * b])
 
@@ -79,3 +77,8 @@ class POINT_CHARGE(Props):
         self.acceleration = force  # say mass is 1
         self.velocity += self.acceleration * DELTA_T
         self.position += self.velocity * DELTA_T
+
+class PLAYER(POINT_CHARGE):
+    def __init__(self, position):
+        super().__init__(position, PLAYER_CHARGE, True)
+        self.prop_id = -1 #Special ID for player
