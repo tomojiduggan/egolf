@@ -43,6 +43,13 @@ class POINT_CHARGE:
     def e_field(self, r):
         return self.charge * (r-self.position) / (np.linalg.norm(r-self.position))
 
+    def get_force(self):
+        e_force = self.charge * net_E(self.position)
+        b = net_B(self.position)
+        b_force = np.array([self.velocity[1] * b, -self.velocity[0] * b])
+
+        return e_force + b_force
+
     def update(self, force): # force is np array
         if(not self.movable):
             print("Warning: Trying to move non-movable")
@@ -77,32 +84,42 @@ class WIRE:
     def current_swap(self):
         self.current *= -1
 
-myWire = WIRE(np.zeros(2), np.array([100, 0]), 1)
-print(myWire.b_field(np.array([50, 20])))
-print(myWire.b_field(np.array([50, -20])))
-    
     
 def net_E(r):
     sum_E = np.zeros(2)
     for object in gc.get_objects():
-        if isinstance(POINT_CHARGE):
+        if isinstance(object, POINT_CHARGE):
             # ignore the e field of the moving charge
             # assume there is only one moving charge
             if(not object.movable):
                 sum_E += object.e_field(r)
-
+    return sum_E
         # E-field of other objects...
 
 def net_B(r):
-    ...
+    sum_B = 0
+    for object in gc.get_objects():
+        if isinstance(object, WIRE):
+            sum_B += object.b_field(r)
+    return sum_B
+
             
+
+
+# TESTING
+
+positions = np.array([[300, 300], [500, 300]])
+charges = np.array([-Q, Q])
 
 myCharge = POINT_CHARGE(np.array([40, 40]), 1, True)
 staticCharge = POINT_CHARGE(np.array([200, 40]), 1, False)
+print(myCharge.get_force())
 
-# TESTING
-positions = np.array([[300, 300], [500, 300]])
-charges = np.array([-Q, Q])
+myWire = WIRE(np.zeros(2), np.array([100, 0]), 1)
+print(myWire.b_field(np.array([50, 20])))
+print(myWire.b_field(np.array([50, -20])))
+    
+
 
 
 
@@ -121,8 +138,8 @@ while running:
     visualize_E(screen, positions, charges)
 
     # Draw a solid blue circle in the center
-    # myCharge.update(force)
     pygame.draw.circle(screen, (0, 0, 255), (600, 400), 20)
+    # myCharge.update(force)
 
     # Flip the display
     pygame.display.flip()
