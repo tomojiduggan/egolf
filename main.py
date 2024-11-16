@@ -34,42 +34,43 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 # TESTING
-player = PLAYER(np.array([40, 40]))
-staticCharge = POINT_CHARGE(np.array([200, 200]), 1, False)
-player.velocity = np.array([18, 12])
 
 # myWire = WIRE(np.zeros(2), np.array([100, 0]), 1)
 # print(myWire.b_field(np.array([50, 20])))
 # print(myWire.b_field(np.array([50, -20])))
+def startGame():
+    player = PLAYER(np.array([40, 40]))
 
+    staticCharge = POINT_CHARGE(np.array([200, 200]), 1, False)
+    player.velocity = np.array([18, 12])
+    run(player)
 
-def run():
+def shoot_phase(player):
+    for object in ALL_PROPS:
+        object.draw(screen)
+    print(pygame.mouse.get_pos())
+
+    
+def move_phase(player):
     for object in ALL_PROPS:
         object.update()
-        player.handle_collision()
+        player.handle_collision(player)
         object.draw(screen)
+    
 
-# Run until the user asks to quit
-running = True
-while running:
+def run(player):
+    while(1):
+        screen.fill((255, 255, 255))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        if(np.max(player.velocity) == 0):
+            shoot_phase(player)
+        else:
+            move_phase(player)
 
-    # Did the user click the window close button?
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+        pygame.display.flip()
 
-    # Fill the background with white
-    screen.fill((255, 255, 255))
-    run()
+startGame()
 
-
-    # Draw every 
-    # Draw a solid blue circle in the center
-    # pygame.draw.circle(screen, (0, 0, 255), (600, 400), 20)
-    # myCharge.update(force)
-
-    # Flip the display
-    pygame.display.flip()
-
-# Done! Time to quit.
 pygame.quit()
