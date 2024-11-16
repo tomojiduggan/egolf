@@ -3,6 +3,7 @@ import button
 import sys
 import Global_Var as Global_Var
 from physics.props import WIRE, POINT_CHARGE, SOLENOID
+import numpy as np
 
 pygame.init()
 # Screen dimensions
@@ -17,15 +18,18 @@ GRAY = (200, 200, 200)
 BLUE = (0, 0, 255)
 # Fonts
 font = pygame.font.Font(None, 74)
-button_font = pygame.font.Font(None, 36)
+button_font = pygame.font.Font(None, 20)
 
 # Button dimensions
-button_width, button_height = 200, 50
+button_width, button_height = 100, 50
 button_x = (SCREEN_WIDTH - button_width) // 2
 button_y = (SCREEN_HEIGHT - button_height) // 2
 
 # Game state
 game_state = "title"
+
+# Props
+props_list = []  # List to store created props
 
 # Load background image
 background_image = pygame.image.load("pictures/screen_cov.webp")  # Replace with your file path
@@ -35,66 +39,18 @@ free_design_image = pygame.image.load("pictures/place_btn.PNG")
 start_button = button.Button((SCREEN_WIDTH - start_button_image.get_width() * 0.5)// 2, SCREEN_HEIGHT-70, start_button_image, 0.5)
 start_game_image = pygame.image.load("pictures/start_btn.png")
 
-# add_wire_image = pygame.image.load('pictures/add_wire.png')
-# add_charge_image = pygame.image.load('pictures/add_charge.png')
-# add_solenoid_image = pygame.image.load('pictures/add_solenoid.png')
-# add_block_image = pygame.image.load('pictures/add_block.png')
-# add_quit_image = pygame.image.load('pictures/quit.png')
-
-# Button dimensions and positions
-button_width, button_height = 200, 50
-
-# Button positions 
-button_positions = {
-    "add_wire": (100, 100),
-    "add_charge": (100, 200),
-    "add_solenoid": (100, 300),
-    "add_block": (100, 400),
-    "add_quit": (100, 500),
-}
-
-# Button text labels
-button_texts = {
-    "add_wire": "Add Wire",
-    "add_charge": "Add Charge",
-    "add_solenoid": "Add Solenoid",
-    "add_block": "Add Block",
-    "add_quit": "Quit",
-}
-
-# Function to draw a button with text
-def draw_button(x, y, width, height, text):
-    pygame.draw.rect(screen, BLACK, (x, y, width, height), 3)  # Button border
-    text_surface = font.render(text, True, BLACK)
-    text_rect = text_surface.get_rect(center=(x + width // 2, y + height // 2))  # Center the text
-    screen.blit(text_surface, text_rect)
-
-# Check if a button is clicked
-def is_button_clicked(x, y, width, height):
-    mouse_pos = pygame.mouse.get_pos()
-    mouse_pressed = pygame.mouse.get_pressed()
-    if x <= mouse_pos[0] <= x + width and y <= mouse_pos[1] <= y + height:
-        if mouse_pressed[0]:  # Left mouse button clicked
-            return True
-    return False
-
-def handle_button_click(button):
-    if button == "add_wire":
-        print("Adding wire...")
-        # Add your functionality for adding wire here
-    elif button == "add_charge":
-        print("Adding charge...")
-        # Add your functionality for adding charge here
-    elif button == "add_solenoid":
-        print("Adding solenoid...")
-        # Add your functionality for adding solenoid here
-    elif button == "add_block":
-        print("Adding block...")
-        # Add your functionality for adding block here
-    elif button == "add_quit":
-        print("Quitting game...")
-        pygame.quit()
-        exit()
+add_wire_image = pygame.image.load('pictures/add_wire.png')
+add_wire_button = button.Button(50, SCREEN_HEIGHT - 100, add_wire_image, 0.04)
+add_charge_image = pygame.image.load('pictures/add_charge.png')
+add_charge_button = button.Button(150, SCREEN_HEIGHT - 100, add_charge_image, 0.04)
+add_solenoid_image = pygame.image.load('pictures/add_solenoid.png')
+add_solenoid_button = button.Button(250, SCREEN_HEIGHT - 100, add_solenoid_image, 0.04)
+add_block_image = pygame.image.load('pictures/add_block.png')
+add_block_button = button.Button(350, SCREEN_HEIGHT - 100, add_block_image, 0.04)
+add_back_image = pygame.image.load('pictures/back.png')
+add_back_button = button.Button(450, SCREEN_HEIGHT - 100, add_back_image, 0.04)
+add_save_image = pygame.image.load('pictures/save.png')
+add_save_button = button.Button(550, SCREEN_HEIGHT - 100, add_save_image, 0.04)
 
 # Load game play button images
 restart_img = pygame.image.load('pictures/restart_btn.png', ).convert_alpha()
@@ -107,8 +63,6 @@ B_img = pygame.image.load('pictures/B_btn.png').convert_alpha()
 
 run = True
 paused = False
-
-
 
 # Button functions
 def restart_game():
@@ -153,20 +107,72 @@ def draw_start_page():
     if free_design.draw(screen):
         game_state = "free_design"
 
+# Create the free design screen
 def free_design():
     """Draw the free design screen."""
+    global game_state, props_list
     screen.fill(WHITE)
-    free_design_text = font.render("Free Design Screen", True, BLACK)
-    free_design_rect = free_design_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-    screen.blit(free_design_text, free_design_rect)
-    # Draw buttons on the screen
-    for button, position in button_positions.items():
-        draw_button(position[0], position[1], button_width, button_height, button_texts[button])
 
-    # Check if any button is clicked and handle the action
-    for button, position in button_positions.items():
-        if is_button_clicked(position[0], position[1], button_width, button_height):
-            handle_button_click(button)
+    # Draw existing props
+    for prop in props_list:
+        if isinstance(prop, WIRE):
+            pygame.draw.line(screen, BLACK, prop.start, prop.end, 3)
+        elif isinstance(prop, POINT_CHARGE):
+            pygame.draw.circle(screen, BLUE, (int(prop.position[0]), int(prop.position[1])), 10)
+        elif isinstance(prop, SOLENOID):
+            prop.draw(screen)  # Solenoid is an image, so just draw it
+
+    # Draw buttons at the bottom
+    add_wire_button.draw(screen)
+    add_charge_button.draw(screen)
+    add_solenoid_button.draw(screen)
+    add_block_button.draw(screen)
+    add_back_button.draw(screen)
+    add_save_button.draw(screen)
+
+    # Handle events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            handle_event(event)
+
+def handle_event(event):
+    """Handle events for adding and dragging props."""
+    global props_list
+
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        # Check if any button is clicked to create a prop
+        if add_wire_button.rect.collidepoint(event.pos):
+            new_wire = WIRE(np.array([100, 100]), np.array([200, 200]), 5)  # Example start and end positions
+            props_list.append(new_wire)
+        elif add_charge_button.rect.collidepoint(event.pos):
+            new_charge = POINT_CHARGE(np.array([300, 300]), 1e-6, True)  # Example position and charge
+            props_list.append(new_charge)
+        elif add_solenoid_button.rect.collidepoint(event.pos):
+            new_solenoid = SOLENOID(10, 1, [0, 0, 1], [500, 500], 'pictures/solenoid.png')
+            props_list.append(new_solenoid)
+        elif add_block_button.rect.collidepoint(event.pos):
+            # Create a block (if needed, you can create a simple rectangle object or other)
+            pass  # Block creation code goes here
+
+        # Check if any prop is being clicked for dragging
+        for prop in props_list:
+            if isinstance(prop, SOLENOID) and prop.rect.collidepoint(event.pos):
+                prop.handle_event(event)  # Start dragging
+
+    elif event.type == pygame.MOUSEBUTTONUP:
+        # Stop dragging
+        for prop in props_list:
+            if isinstance(prop, SOLENOID):
+                prop.handle_event(event)
+
+    elif event.type == pygame.MOUSEMOTION:
+        # Update position if dragging
+        for prop in props_list:
+            if isinstance(prop, SOLENOID):
+                prop.handle_event(event)
 
 def draw_game():
     """Draw the game screen."""
