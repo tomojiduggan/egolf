@@ -41,20 +41,20 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 def startGame():
     player = PLAYER(np.array([40, 40]))
 
-    staticCharge = POINT_CHARGE(np.array([200, 200]), 1, False)
-    player.velocity = np.array([18, 12])
+    staticCharge = POINT_CHARGE(np.array([200, 200]), -1, False)
+    player.velocity = np.array([50, 20])
     run(player)
 
 def shoot_phase(player):
     for object in ALL_PROPS:
         object.draw(screen)
-    print(pygame.mouse.get_pos())
+    # print(pygame.mouse.get_pos())
 
     
 def move_phase(player):
     for object in ALL_PROPS:
         object.update()
-        player.handle_collision(player)
+        player.handle_collisions()
         object.draw(screen)
     
 
