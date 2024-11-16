@@ -14,7 +14,7 @@ def coulomb_sim_at_poi(positions, charges, poi, unit_vec=False):
     :param poi: Vector (x, y) (2,) point of interest
     :return: Vector (x, y), if unit vector, then return unit vector
     """
-    r = (poi - positions)/100
+    r = (poi - positions)/100 # 100 pixel is 1m
     r_magnitudes = np.linalg.norm(r, axis=1)
 
     # Compute the electric field contribution from each charge
@@ -23,7 +23,6 @@ def coulomb_sim_at_poi(positions, charges, poi, unit_vec=False):
 
     # Sum the contributions
     e_field = np.sum(e_field_contributions, axis=0)
-
 
     return e_field
 

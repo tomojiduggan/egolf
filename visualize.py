@@ -21,3 +21,17 @@ def visualize_E(screen, positions, charges):
             poi = np.array([x, y])
             e_field = coulomb_sim_at_poi(positions, charges, poi)
             draw_vector(screen, poi, e_field, scale=1)
+
+
+# FOR COLOR GRADIENT FOR E FIELD
+def magnitude_to_color(magnitude, min_magnitude, max_magnitude):
+    # Normalize magnitude to range [0, 1]
+    norm = (magnitude - min_magnitude) / (max_magnitude - min_magnitude)
+    norm = np.clip(norm, 0, 1)
+
+    # Map normalized value to RGB color (blue -> red gradient)
+    r = int(norm * 255)
+    g = 0
+    b = int((1 - norm) * 255)
+
+    return (r, g, b)
