@@ -1,6 +1,7 @@
 # Import the pygame module
 import pygame
 import numpy as np
+import gc
 
 # Import pygame.locals for easier access to key coordinates
 # Updated to conform to flake8 and black standards
@@ -18,8 +19,8 @@ from pygame.locals import (
 pygame.init()
 
 # Define constants for the screen width and height
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1200
+SCREEN_HEIGHT = 800
 
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
@@ -28,33 +29,35 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 DELTA_T = 0.05 # seconds
 
 class POINT_CHARGE:
-    def __init__(self, position, charge, movable): # position is numpy array length 3
+    def __init__(self, position, charge, movable): # position is numpy array length 2
         self.position = position
         self.charge = charge
         self.movable = movable
-        if(movable):
-            self.velocity = np.zeros(3)
-            self.acceleration = np.zeros(3)
-
+        self.velocity = np.zeros(2)
+        self.acceleration = np.zeros(2)
     
-    def move(self, position):
+    def e_field(self, r):
+        return self.charge * (r-self.position) / (np.linalg.norm(r-self.position))
+
+    def update(self, force): # force is np array
         if(not self.movable):
-            print("No")
-            return
-        
-        self.position = position
+            print("Warning: Trying to move non-movable")
+            return 
 
-class MOVABLE:
-    def __init__(self, position):
-        self.position = position
-        self.velocity = np.zeros(3)
-        self.acceleration = np.zeros(3)
+        self.acceleration = force # say mass is 1
+        self.velocity += self.acceleration * DELTA_T
+        self.position += self.velocity * DELTA_T
+    
+def net_E(r):
+    sum_E = np.zeros(2)
+    for object in gc.get_objects():
+        if isinstance(POINT_CHARGE):
+            sum_E += object.e_field(r)
+        # 
+            
 
-
-
-
-def charge_e_field(q1, q2, r):
-    q1 * q2 * r / (np.linalg.norm(r))
+myCharge = POINT_CHARGE(np.array([40, 40]), 1, True)
+staticCharge = POINT_CHARGE(np.array([200, 40]), 1, False)
 
 # Run until the user asks to quit
 running = True
@@ -69,7 +72,8 @@ while running:
     screen.fill((255, 255, 255))
 
     # Draw a solid blue circle in the center
-    pygame.draw.circle(screen, (0, 0, 255), (250, 250), 75)
+    # myCharge.update(force)
+    pygame.draw.circle(screen, (0, 0, 255), (600, 400), 20)
 
     # Flip the display
     pygame.display.flip()
