@@ -23,12 +23,12 @@ pygame.init()
 # Define constants for the screen width and height
 SCREEN_WIDTH = Global_Var.SCREEN_WIDTH
 SCREEN_HEIGHT = Global_Var.SCREEN_HEIGHT
+DELTA_T = Global_Var.DELTA_T
 
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-DELTA_T = 0.05 # seconds
 
 class POINT_CHARGE:
     def __init__(self, position, charge, movable): # position is numpy array length 2
@@ -54,13 +54,30 @@ class WIRE:
     def __init__(self, start, end, current): #start and end are positions of the two ends of the wire 
         self.start = start
         self.end = end
+        self.vec_l = end - start
         self.current = current
-
+ 
+    def b_field(self, r):
+        x1_r = r - self.start
+        x2_r = r - self.end
+        c1 = np.dot(x1_r, self.vec_l) / np.linalg.norm(x1_r)
+        c2 = -np.dot(x2_r, self.vec_l) / np.linalg.norm(x2_r)
+        norm_b_phi = self.current / (np.linalg.norm(self.vec_l)) * (c1 + c2)
+        # Finding orientation (to find sign) using cross product
+        cross_prod = x1_r[0] * self.vec_l[1] - x1_r[1] * self.vec_l[0]
+        if(cross_prod > 0):
+            return norm_b_phi
+        elif(cross_prod < 0):
+            return -norm_b_phi
+        else:
+            return 0
         
-    
-    def current_swap(self, current):
+    def current_swap(self):
         self.current *= -1
 
+myWire = WIRE(np.zeros(2), np.array([100, 0]), 1)
+print(myWire.b_field(np.array([50, 20])))
+print(myWire.b_field(np.array([50, -20])))
     
     
 def net_E(r):
