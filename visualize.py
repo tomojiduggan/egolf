@@ -20,5 +20,4 @@ def visualize_E(screen, positions, charges):
         for y in range(height_start, height_start + height, grid_spacing):
             poi = np.array([x, y])
             e_field = coulomb_sim_at_poi(positions, charges, poi)
-            print(e_field)
-            draw_vector(screen, poi, e_field, scale=100000)
+            draw_vector(screen, poi, e_field, scale=1)

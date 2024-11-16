@@ -26,7 +26,7 @@ pygame.init()
 SCREEN_WIDTH = Global_Var.SCREEN_WIDTH
 SCREEN_HEIGHT = Global_Var.SCREEN_HEIGHT
 DELTA_T = Global_Var.DELTA_T
-
+Q = Global_Var.Q
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -102,7 +102,7 @@ staticCharge = POINT_CHARGE(np.array([200, 40]), 1, False)
 
 # TESTING
 positions = np.array([[300, 300], [500, 300]])
-charges = np.array([-1, 1])
+charges = np.array([-Q, Q])
 
 
 

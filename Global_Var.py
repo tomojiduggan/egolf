@@ -7,3 +7,5 @@ GRID_SPACING = 40
 
 DELTA_T = 0.05
 
+Q = 10
+
