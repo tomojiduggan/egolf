@@ -5,6 +5,8 @@ import pygame
 import numpy as np
 import gc
 
+from visualize import visualize_E
+
 # Import pygame.locals for easier access to key coordinates
 # Updated to conform to flake8 and black standards
 from pygame.locals import (
@@ -102,6 +104,12 @@ def net_B(r):
 myCharge = POINT_CHARGE(np.array([40, 40]), 1, True)
 staticCharge = POINT_CHARGE(np.array([200, 40]), 1, False)
 
+# TESTING
+positions = np.array([[300, 300], [500, 300]])
+charges = np.array([-1, 1])
+
+
+
 # Run until the user asks to quit
 running = True
 while running:
@@ -113,6 +121,8 @@ while running:
 
     # Fill the background with white
     screen.fill((255, 255, 255))
+
+    visualize_E(screen, positions, charges)
 
     # Draw a solid blue circle in the center
     pygame.draw.circle(screen, (0, 0, 255), (600, 400), 20)
