@@ -2,9 +2,9 @@
 File storing all the props class used in game
 """
 import numpy as np
+from Global_Var import *
 
 id_track = 0
-
 
 def get_new_id():
     id_track += 1
@@ -12,14 +12,19 @@ def get_new_id():
 
 
 class Props(object):
-    def __init__(self, position, movable, prop_id):
+    def __init__(self, position, movable):
         self.position = position
         self.movable = movable
-        self.prop_id = prop_id
+        self.prop_id = get_new_id()
+
+        ALL_PROPS.append(self)
 
 
-class WIRE:
+class WIRE(Props):
     def __init__(self, start, end, current):  # start and end are positions of the two ends of the wire
+        self.position = (end - start) / 2
+        self.movable = False
+        
         self.start = start
         self.end = end
         self.vec_l = end - start
@@ -53,6 +58,11 @@ class POINT_CHARGE(Props):
 
     def e_field(self, r):
         return self.charge * (r - self.position) / (np.linalg.norm(r - self.position))
+
+    def b_field(self, r):
+        if(not self.movable):
+            return 0
+        return self.charge * np.cross(self.velocity, self.position - r) / ()
 
     def get_force(self):
         e_force = self.charge * net_E(self.position)
