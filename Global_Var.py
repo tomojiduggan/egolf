@@ -9,6 +9,7 @@ GRID_SPACING = 40
 DELTA_T = 0.05
 
 Q = 1.2
+FRICTION = 0.5
 
 ALL_PROPS = []
 

@@ -79,8 +79,12 @@ class POINT_CHARGE(Props):
         e_force = self.charge * net_E(self.position, self.prop_id)
         b = net_B(self.position, self.prop_id)
         b_force = np.array([self.velocity[1] * b, -self.velocity[0] * b])
-
-        return e_force + b_force
+        em_force = e_force + b_force
+        if(np.max(self.velocity) == 0 and np.linalg.norm(em_force) < FRICTION):
+            print("Zero!")
+            return np.array([0, 0])
+        else:
+            return em_force - FRICTION * self.velocity / np.linalg.norm(self.velocity)
 
     def update(self):  # force is np array
         if (not self.movable):

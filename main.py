@@ -34,7 +34,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 # TESTING
-myCharge = POINT_CHARGE(np.array([40, 40]), 1, True)
+myCharge = POINT_CHARGE(np.array([40, 40]), -1, True)
 staticCharge = POINT_CHARGE(np.array([200, 200]), 1, False)
 print(myCharge.get_force())
 myCharge.velocity = np.array([18, 12])
