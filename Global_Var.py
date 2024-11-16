@@ -1,7 +1,7 @@
 """This is a file that stores all the global variable, and shall be imported in all files"""
 
-SCREEN_WIDTH = 1200
-SCREEN_HEIGHT = 800
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
 
 GRID_SPACING = 40
 
