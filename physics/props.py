@@ -18,19 +18,20 @@ class Props(object):
         self.has_B = False
         ALL_PROPS.append(self)
 
+    def update(self):
+        return
+
 class REGION(Props):
     """
 
     """
-    def __init__(self, tl, tr, br, bl, color=(255, 0, 0)):
-        super().__init__(np.array([(tr-tl)/2, (bl-tl)/2]), False)
+    def __init__(self, tl, br, color=(255, 0, 0)):
+        super().__init__(np.array([(br[0]-tl[0])/2, (br[1]-tl[1])/2]), False)
         self.tl = tl
-        self.tr = tr
         self.br = br
-        self.bl = bl
-        self.width = tr-tl
-        self.height = bl-tl
-        self.rect = pygame.Rect((tr - tl) / 2, (bl - tl) / 2, self.width, self.height)
+        self.width = br[0]-tl[0]
+        self.height = br[1]-tl[1]
+        self.rect = pygame.Rect(tl[0], tl[1], self.width, self.height)
 
         self.color = color
 
@@ -39,8 +40,8 @@ class REGION(Props):
         pygame.draw.rect(screen, self.color, self.rect)
 
 class WALL(REGION):
-    def __init__(self, tl, tr, br, bl):
-        super().__init__(tl, tr, br, bl)
+    def __init__(self, tl, br):
+        super().__init__(tl, br)
 
 
 
@@ -138,16 +139,27 @@ class PLAYER(POINT_CHARGE):
         for p in ALL_PROPS:
             if isinstance(p, WALL):
                 if p.rect.colliderect(self.rect):
-                    # Determine if it's a horizontal or vertical wall collision
-                    if self.position[0] < p.rect.centerx:  # Left wall
-                        normal = np.array([1, 0])  # Normal vector for a vertical wall on the left
-                    else:  # Right wall
-                        normal = np.array([-1, 0])  # Normal vector for a vertical wall on the right
-
-                    if self.position[1] < p.rect.centery:  # Upper wall
-                        normal = np.array([0, 1])  # Normal vector for a horizontal wall at the top
-                    else:  # Bottom wall
-                        normal = np.array([0, -1])  # Normal vector for a horizontal wall at the bottom
+                    # Determine the direction of collision
+                    if self.velocity[0] >= 0 and self.velocity[1] >= 0: # bot right v
+                        if self.position[0] >= p.tl[0]:
+                            normal = np.array([0, 1]) # top
+                        else:
+                            normal = np.array([1, 0]) # left
+                    elif self.velocity[0] >= 0 and self.velocity[1] < 0:# top right v
+                        if self.position[0] >= p.tl[0]:
+                            normal = np.array([0, -1]) # bot
+                        else:
+                            normal = np.array([1, 0])  # left
+                    elif self.velocity[0] < 0 and self.velocity[1] >= 0: # bot left v
+                        if self.position[0] >= p.br[0]:
+                            normal = np.array([-1, 0])  # right
+                        else:
+                            normal = np.array([0, 1])  # top
+                    else: # top left v
+                        if self.position[0] >= p.br[0]: # right
+                            normal = np.array([-1, 0])
+                        else:
+                            normal = np.array([0, -1]) # bot
 
                     # Calculate the perpendicular component of the velocity (normal component)
                     velocity_normal_component = np.dot(self.velocity, normal) * normal
@@ -155,18 +167,23 @@ class PLAYER(POINT_CHARGE):
                     # Reverse the normal component of the velocity (bounce effect)
                     self.velocity -= 2 * velocity_normal_component
 
-                    # Ensure player is no longer inside the wall by adjusting their position
-                    if np.dot(self.velocity, normal) < 0:  # If player is moving towards the wall
-                        overlap = np.linalg.norm(self.position - self.rect.center) - self.radius
-                        self.position += normal * overlap  # Push player out of the wall
-
             elif isinstance(p, POINT_CHARGE) and p.prop_id != -1:
                 # Circular collision check
                 distance = np.linalg.norm(self.position - p.position)
                 if distance - 2 * self.radius <= 0:
                     print("Collision detected", p.position)
 
-
+    def update(self):
+        """
+        Addition need to update bounding box
+        """
+        super().update()
+        self.rect = pygame.Rect(
+            self.position[0] - self.radius,
+            self.position[1] - self.radius,
+            self.radius * 2,
+            self.radius * 2,
+        )
 class SOLENOID(Props):
     def __init__(self, num_loops, current, direction, position, image_path):
         self.num_loops = num_loops

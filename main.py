@@ -36,6 +36,10 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 # TESTING
 player = PLAYER(np.array([40, 40]))
 staticCharge = POINT_CHARGE(np.array([200, 200]), 1, False)
+#wall = WALL(np.array([10, 200]), np.array([600, 220]))
+#wall = WALL(np.array([290, 10]), np.array([320, 500]))
+wall = WALL(np.array([10, 200]), np.array([600, 220]))
+print(wall.position, wall.width, wall.height)
 player.velocity = np.array([18, 12])
 
 # myWire = WIRE(np.zeros(2), np.array([100, 0]), 1)
