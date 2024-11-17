@@ -29,6 +29,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
 BLUE = (0, 0, 255)
+RED = (255, 0, 0)
 
 ROWS = 15
 MAX_COLS = 150
@@ -75,8 +76,8 @@ def back_to_title():
         
 def game_stop(): 
     n = len(ALL_PROPS)
-    for i in range(n):
-        ALL_PROPS.pop()
+    for prop in ALL_PROPS:
+        prop.free()
 
 def game_restart():
     game_stop()
@@ -134,6 +135,7 @@ def draw_start_page():
     global game_state  
     screen.fill(WHITE)
     if new_game.draw(screen):
+        game_stop()
         game_state = "game"
         game_level = "level1.json"
         getLevel(game_level)
@@ -162,27 +164,44 @@ def free_design_screen():
         if button.draw(screen):  # Draw the button and check if clicked
             current_tile = button_count  # Update current selected tile if clicked 
             # Call the corresponding function based on the button clicked
-            if current_tile == 0:  # Restart Button
+            if current_tile == 0:  # Add Wire
                 wire = WIRE((100, 100), (150, 150), 2)
                 props_list.append(wire)
-            elif current_tile == 1:  # Pause Button
+            elif current_tile == 1:  # Add Charge
                 charge = POINT_CHARGE((200, 200), 1, False)
                 props_list.append(charge)
-            elif current_tile == 2:  # Place Button
-                solenoid = SOLENOID(50, 1, [0,0,1], [200,200])
+            elif current_tile == 2:  # Add Solenoid
+                solenoid = SOLENOID(50, (200, 200))
                 props_list.append(solenoid)
-            elif current_tile == 3:  # Swap Button
+            elif current_tile == 3:  # Add Block
                 pass
-            elif current_tile == 4:  # Extra Action Button E
+            elif current_tile == 4:  # Back to Title
                 back_to_title()
-            elif current_tile == 5:  # Extra Action Button B
+            elif current_tile == 5:  # Save (currently no action)
                 pass
     # Highlight the selected button with a gray border
     if current_tile != -1:  
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect,3)  # Add padding around the button
     # Update the display
     pygame.display.flip()
-    
+
+def draw_win_page():
+     global game_state
+     screen.blit(win_img, (0, 0))
+     pygame.display.flip()
+
+
+def draw_lose_page():
+    global game_state
+    global render_E_simulation
+    render_E_simulation = False
+    global render_B_simulation
+    render_B_simulation = False
+    screen.fill(WHITE)
+    lose_text = font.render("LOSE", True, RED)
+    text_rect = lose_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+    screen.blit(lose_text, text_rect)  # Draw the text on the screen
+    pygame.display.flip()  # Update the display
 
 # State where clicking will launch ball
 def run_launch(player):
@@ -226,7 +245,7 @@ def draw_game():
     right_boundary.draw(screen)
 
     # Define button list
-    button_list = [restart_button, pause_button,  swap_button, E_button, B_button,back_button]
+    button_list = [restart_button, pause_button, swap_button, E_button, B_button,back_button]
 
     # Initialize game state
     current_tile = -1
@@ -246,6 +265,8 @@ def draw_game():
             elif current_tile == 2:  # Swap Button
                 render_E_simulation = False
                 render_B_simulation = False
+                if selected_charge:
+                     selected_charge.swap_sign()
                 print("Swapping objects...")
             elif current_tile == 3:  # Extra Action Button E
                 print("Plotting the electric field")
@@ -260,8 +281,7 @@ def draw_game():
                 print(render_B_simulation)
                 B_sim_layer.fill((0, 0, 0, 0))
                 visualize_B(B_sim_layer)
-                #back_to_title()
-            elif current_tile == 6: # Back button
+            elif current_tile == 5: # Back button
                 render_E_simulation = False
                 render_B_simulation = False
                 game_stop()
@@ -272,6 +292,12 @@ def draw_game():
     if current_tile != -1:  # Only highlight if a button is selected
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect, 3)
 
+    if selected_charge:
+        selected_charge.draw(screen)
+    # Highlight the selected charge
+    if selected_charge:
+        pygame.draw.rect(screen, GRAY, selected_charge.rect.inflate(4, 4), 3)
+    
     for object in ALL_PROPS:
         if(not paused):
             object.update()
@@ -281,7 +307,11 @@ def draw_game():
             player = object
 
     if not paused:
-        player.handle_collisions()
+        message = player.handle_collisions()
+        if message == 'collision':
+             game_state = 'over'
+        elif message == 'win':
+            game_state = 'win'
         if(max(player.velocity) == 0):
             run_launch(player) # draw arrow, make it so clicking within the screen will launch the player
 
@@ -290,12 +320,31 @@ def draw_game():
 
 
 clock = pygame.time.Clock()
+
+def handle_event(object, event):
+    global selected_charge
+    if (isinstance(object, POINT_CHARGE)):
+    # print(selected_charge)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if object.rect.collidepoint(event.pos) and selected_charge == None:
+                selected_charge = object
+            elif object.rect.collidepoint(event.pos):
+                 selected_charge == object
+                 selected_charge = None
+
 # Main loop
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if game_state == "game":
+            for object in ALL_PROPS:
+                if not (isinstance(object, PLAYER)):
+                    handle_event(object,event)
+        if game_state == "free_design":
+            for object in ALL_PROPS:
+                object.handle_event(event)
 
     # Update screen based on the current state
     if game_state == "title":
@@ -306,6 +355,10 @@ while running:
         draw_game()
     elif game_state == "free_design":
         free_design_screen()
+    elif game_state == "over":
+        draw_lose_page()
+    elif game_state == "win":
+        draw_win_page()
 
     if render_E_simulation:
         screen.blit(E_sim_layer, (0, 0))

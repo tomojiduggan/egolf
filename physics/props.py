@@ -25,6 +25,29 @@ class Props(object):
         on each update, for most prop do nothing
         """
         return
+    
+    def free(self):
+        global ALL_PROPS
+        if self in ALL_PROPS:
+            ALL_PROPS.remove(self)
+        del self
+
+    def handle_event(self, event):
+        """Handle mouse events for dragging."""
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.is_dragging = True
+                self.offset_x = self.rect.x - event.pos[0]
+                self.offset_y = self.rect.y - event.pos[1]
+            
+        elif event.type == pygame.MOUSEBUTTONUP:
+            self.is_dragging = False
+
+        elif event.type == pygame.MOUSEMOTION:
+            if self.is_dragging:
+                self.rect.x = event.pos[0] + self.offset_x
+                self.rect.y = event.pos[1] + self.offset_y
+                self.position = [self.rect.x, self.rect.y]
 
 class REGION(Props):
     """
@@ -208,11 +231,13 @@ class PLAYER(POINT_CHARGE):
                 distance = np.linalg.norm(self.position - p.position)
                 if distance - 2 * self.radius <= 0:
                     print("Collision detected", p.position)
+                    return 'collision'
 
             elif isinstance(p, WIN):
                 if p.rect.colliderect(self.rect):
                     print("You Win")
                     # TODO: Implement winning screen
+                    return 'win'
 
 
     def update(self):
@@ -229,37 +254,19 @@ class PLAYER(POINT_CHARGE):
 class SOLENOID(Props):
     # Removed num_loops (same as putting current * n)
     # Removed direction (Say +I is counterclockwise, say -I is clockwise)
-    def __init__(self, current, position, image_path):
+    def __init__(self, current, position):
         self.current = current
-        self.position = list(position)  # Convert to list for mutability
+        self.position = position 
         self.image_path = 'pictures/solenoid.png'
+        self.image = pygame.image.load(self.image_path)
+        self.image = pygame.transform.scale(self.image, (50, 50))
+        self.rect = self.image.get_rect(topleft=self.position)
         self.movable = True
-        self.is_dragging = False
         self.has_B = True
 
     def draw(self, screen):
-        image = pygame.image.load(self.image_path)
-        # pygame.transform.scale_by(image, )
-        image = pygame.transform.scale(image, (30, 30))
-        self.rect =image.get_rect(topleft=self.position)
-        self.length = self.rect.width
-        screen.blit(image, image.get_rect(center=self.position))
-    def handle_event(self, event):
-        """Handle mouse events for dragging."""
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
-                self.is_dragging = True
-                self.offset_x = self.rect.x - event.pos[0]
-                self.offset_y = self.rect.y - event.pos[1]
+        screen.blit(self.image, self.image.get_rect(center=self.position))
 
-        elif event.type == pygame.MOUSEBUTTONUP:
-            self.is_dragging = False
-
-        elif event.type == pygame.MOUSEMOTION:
-            if self.is_dragging:
-                self.rect.x = event.pos[0] + self.offset_x
-                self.rect.y = event.pos[1] + self.offset_y
-                self.position = [self.rect.x, self.rect.y]
 
     def b_field(self, point):
         """
