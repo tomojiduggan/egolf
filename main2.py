@@ -61,6 +61,7 @@ game_level = "level1.json"
 
 run = True
 paused = False
+render_E_simulation = False
 
 # Button functions
 def pause_game():
@@ -206,6 +207,7 @@ def draw_game():
 
     """Draw the game screen."""
     global paused  # Ensure `paused` is accessible
+    global render_E_simulation
 
     # Clear the screen
     screen.fill(WHITE)
@@ -264,19 +266,22 @@ def draw_game():
                 global game_state
                 game_state = "start_page"
                 return
-
     # Highlight the selected tile with a gray border
     if current_tile != -1:  # Only highlight if a button is selected
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect, 3)
 
     for object in ALL_PROPS:
-        object.update()
+        if(not paused):
+            object.update()
+            
         object.draw(screen)
         if(isinstance(object, PLAYER)):
             player = object
-    player.handle_collisions()
-    if(max(player.velocity) == 0):
-        run_launch(player) # draw arrow, make it so clicking within the screen will launch the player
+
+    if not paused:
+        player.handle_collisions()
+        if(max(player.velocity) == 0):
+            run_launch(player) # draw arrow, make it so clicking within the screen will launch the player
 
     # Update the display
     pygame.display.flip()

@@ -65,7 +65,7 @@ class WIRE(Props):
         self.start = start
         self.end = end
         self.vec_l = end - start
-        self.current = current
+        self.current = current * I
         self.has_B = True
         self.has_B = True
 
@@ -88,12 +88,9 @@ class WIRE(Props):
         return
 
     def draw(self, screen):
-        return
-
-    def update(self):
-        return
-
-    def draw(self, screen):
+        pygame.draw.line(screen, "grey", self.start, self.end, width=5)
+        pygame.draw.circle(screen, "red", self.start, 10)
+        pygame.draw.circle(screen, "blue", self.end, 10)
         return
 
     def current_swap(self):
@@ -135,7 +132,7 @@ class POINT_CHARGE(Props):
         b = net_B(self.position, self.prop_id)
         b_force = np.array([self.velocity[1] * b, -self.velocity[0] * b])
         em_force = e_force + b_force
-        if(np.max(self.velocity) < 0.001 and np.linalg.norm(em_force) < FRICTION):
+        if(np.max(self.velocity) < 0.01 and np.linalg.norm(em_force) < FRICTION):
             self.velocity = np.array([0, 0])
             return np.array([0, 0])
         else:

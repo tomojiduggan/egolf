@@ -13,13 +13,14 @@ def getLevel(filename):
     for charge in levelObj["charges"]:
         charges.append(POINT_CHARGE(np.array(charge[0]), charge[1], charge[2]))
 
+    walls = []
+    for wall in levelObj["walls"]:
+        walls.append(WALL(np.array(wall[0]), np.array(wall[1])))
+
     wires = []
     for wire in levelObj["wires"]:
         wires.append(WIRE(np.array(wire[0]), np.array(wire[1]), wire[2]))
 
-    walls = []
-    for wall in levelObj["walls"]:
-        walls.append(WALL(np.array(wall[0]), np.array(wall[1])))
 
     win = []
     for win in levelObj["win"]:
