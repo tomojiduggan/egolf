@@ -1,10 +1,24 @@
 import json
 from physics.props import *
 
+
 def getLevel(filename):
+    global ALL_PROPS
+    for prop in ALL_PROPS:
+        prop.free()
+    for prop in ALL_PROPS:
+        prop.free()
+    for prop in ALL_PROPS:
+        prop.free()
+    for prop in ALL_PROPS:
+        prop.free()
+    for prop in ALL_PROPS:
+        prop.free()
+
     levelFile = open(f"levels/{filename}", "r")
     levelFileStr = levelFile.read()
     levelObj = json.loads(levelFileStr)
+    print("Hel")
     print(levelObj)
 
     player = PLAYER(np.array(levelObj["player"]))
