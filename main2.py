@@ -316,7 +316,9 @@ while running:
             running = False
         if game_state == "game":
             for object in ALL_PROPS:
-                handle_event(object,event)
+                if not (isinstance(object, PLAYER)):
+                    handle_event(object,event)
+
         
 
     # Update screen based on the current state
