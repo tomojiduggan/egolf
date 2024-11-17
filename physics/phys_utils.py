@@ -12,6 +12,9 @@ def get_E_level(poi):
     # Get all field except the player
     return net_E(poi, -1)
 
+def get_B_level(poi):
+    return net_B(poi, -1)
+
 # Take electric field without prop with id
 def net_E(r, id):
     """

@@ -5,6 +5,19 @@ import Global_Var as Global_Var
 from physics.props import *
 import numpy as np
 
+from visualize import visualize_E
+from runlevel import getLevel
+from map_design import free_design_screen
+
+# Simulation Code
+# Controlled by buttons
+render_E_simulation = False
+render_B_simulation = False
+
+E_sim_layer = pygame.Surface((400, 400), pygame.SRCALPHA)
+B_sim_layer = pygame.Surface((400, 400), pygame.SRCALPHA)
+
+
 pygame.init()
 # Screen dimensions
 SCREEN_WIDTH = Global_Var.SCREEN_WIDTH
@@ -49,7 +62,7 @@ game_state = "title"
 background_image = pygame.image.load("pictures/screen_cov.webp")  # Replace with your file path
 background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))  # Resize to fit the screen
 start_button_image = pygame.image.load("pictures/start_btn.png")
-free_design_image = pygame.image.load("pictures/place_btn.PNG")
+free_design_image = pygame.image.load("pictures/place_btn.png")
 start_button = button.Button((SCREEN_WIDTH - start_button_image.get_width() * 0.5)// 2, SCREEN_HEIGHT-70, start_button_image, 0.5)
 start_game_image = pygame.image.load("pictures/start_btn.png")
 # load start page buttons
@@ -152,6 +165,8 @@ def draw_start_page():
     screen.fill(WHITE)
     if new_game.draw(screen):
         game_state = "game"
+        game_level = "level1.json"
+        getLevel(game_level)
     if free_design.draw(screen):
         game_state = "free_design"
 
@@ -197,7 +212,7 @@ def free_design_screen():
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect,3)  # Add padding around the button
     # Update the display
     pygame.display.flip()
-    
+
 def draw_game():
     """Draw the game screen."""
     global paused  # Ensure `paused` is accessible
@@ -239,9 +254,16 @@ def draw_game():
             elif current_tile == 3:  # Swap Button
                 print("Swapping objects...")
             elif current_tile == 4:  # Extra Action Button E
-                print("Performing extra action E...")
+                print("Plotting the electric field")
+                # Turn on/off the electric field
+                render_E_simulation = not render_E_simulation
+
+                # After toggle if it is off state, clear the screen
+                if not render_E_simulation:
+                    E_sim_layer.fill((0, 0, 0, 0))
+
             elif current_tile == 5:  # Extra Action Button B
-                extra_action_B()
+                print("Plotting the magnetic field")
 
     # Highlight the selected tile with a gray border
     if current_tile != -1:  # Only highlight if a button is selected
@@ -253,8 +275,12 @@ def draw_game():
     # Update the display
     pygame.display.flip()
 
+def draw_E_sim_layer():
+    visualize_E(E_sim_layer)
 
-
+def draw_B_sim_layer():
+    #TODO
+    pass
 # Main loop
 running = True
 while running:
@@ -272,11 +298,14 @@ while running:
     elif game_state == "free_design":
         free_design_screen()
 
+    if render_E_simulation:
+        draw_E_sim_layer()
+    if render_B_simulation:
+        draw_B_sim_layer()
+
     # Update the display
     pygame.display.flip()
 
 # Quit Pygame
 pygame.quit()
 sys.exit()
-
-

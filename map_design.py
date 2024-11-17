@@ -2,7 +2,7 @@ import pygame
 import button
 import sys
 import Global_Var as Global_Var
-from physics.props import WIRE, POINT_CHARGE, SOLENOID
+from physics.props import*
 import numpy as np
 
 pygame.init()
@@ -88,11 +88,48 @@ run = True
 paused = False
 
 
+def pause_game():
+    print("Pausing the game...")
+    # Add code here to pause the game, e.g., freeze the game loop or display a pause screen.
+
+def back_to_title():
+    global game_state
+    print("Returning to title screen...")
+    game_state = 'start_page'
+    
+
+global props_list 
 props_list = []
 # Create the free design screen
 def free_design_screen():
+    global game_state, props_list  # Declare globals at the start
+
+    selected_prop = None
+    dragging = False
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            # Check if a prop is clicked
+            mouse_pos = pygame.mouse.get_pos()
+            for prop in reversed(props_list):  # Check topmost props first
+                if prop.rect.collidepoint(mouse_pos):
+                    selected_prop = prop
+                    dragging = True
+                    break
+        elif event.type == pygame.MOUSEBUTTONUP:
+            # Release the selected prop
+            if dragging:
+                dragging = False
+                selected_prop = None
+        elif event.type == pygame.MOUSEMOTION:
+            # Drag the selected prop
+            if dragging and selected_prop:
+                selected_prop.set_position(pygame.mouse.get_pos())
+
     """Draw the free design screen."""
-    global game_state, props_list
     screen.fill(WHITE)
 
     # Draw existing props

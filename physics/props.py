@@ -107,9 +107,12 @@ class POINT_CHARGE(Props):
         self.velocity = np.zeros(2)
         self.acceleration = np.zeros(2)
         self.radius = 15
-        self.image_path = "img/charge.jpg"
         self.has_E = True
         self.image_path = 'pictures/plus_charge.png'
+        if(charge > 0):
+            self.image_path = "pictures/plus_charge.png"
+        else:
+            self.image_path = "pictures/minu_charge.png"
         if(movable):
             self.has_B = True
 
