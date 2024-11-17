@@ -41,3 +41,6 @@ E_img = pygame.image.load('pictures/E_btn.png').convert_alpha()
 E_button = button.Button(450, SCREEN_HEIGHT - 100, E_img, 0.3)
 B_img = pygame.image.load('pictures/B_btn.png').convert_alpha()
 B_button = button.Button(550, SCREEN_HEIGHT - 100, B_img, 0.3)
+# load win image
+win_img = pygame.image.load('pictures/win.png').convert_alpha()
+win_img = pygame.transform.scale(win_img, (SCREEN_WIDTH, SCREEN_HEIGHT))

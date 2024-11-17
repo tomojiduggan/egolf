@@ -29,6 +29,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
 BLUE = (0, 0, 255)
+RED = (255, 0, 0)
 
 ROWS = 15
 MAX_COLS = 150
@@ -183,7 +184,20 @@ def free_design_screen():
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect,3)  # Add padding around the button
     # Update the display
     pygame.display.flip()
-    
+
+def draw_win_page():
+     global game_state
+     screen.blit(win_img, (0, 0))
+     pygame.display.flip()
+
+
+def draw_lose_page():
+    global game_state
+    screen.fill(WHITE)
+    lose_text = font.render("LOSE", True, RED)
+    text_rect = lose_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+    screen.blit(lose_text, text_rect)  # Draw the text on the screen
+    pygame.display.flip()  # Update the display
 
 # State where clicking will launch ball
 def run_launch(player):
@@ -281,7 +295,11 @@ def draw_game():
             player = object
 
     if not paused:
-        player.handle_collisions()
+        message = player.handle_collisions()
+        if message == 'collision':
+             game_state = 'over'
+        elif message == 'win':
+            game_state = 'win'
         if(max(player.velocity) == 0):
             run_launch(player) # draw arrow, make it so clicking within the screen will launch the player
 
@@ -299,10 +317,6 @@ def handle_event(object, event):
             elif object.rect.collidepoint(event.pos):
                  selected_charge == object
                  selected_charge = None
-            # if swap_button.draw(screen) and selected_charge:
-            #     pass
-            # else:
-            #     selected_charge = None
 
 def draw_B_sim_layer():
     #TODO
@@ -330,6 +344,10 @@ while running:
         draw_game()
     elif game_state == "free_design":
         free_design_screen()
+    elif game_state == "over":
+        draw_lose_page()
+    elif game_state == "win":
+        draw_win_page()
 
     if render_E_simulation:
         # E_sim_layer.fill((0, 0, 0, 0))
