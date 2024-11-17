@@ -12,7 +12,7 @@ import json
 
 from visualize import visualize_E, visualize_B
 from runlevel import getLevel
-
+import time
 
 from load_images import *
 
@@ -78,12 +78,17 @@ def back_to_title():
     game_state = 'start_page'
         
 def game_stop(): 
-    n = len(ALL_PROPS)
-    for prop in ALL_PROPS:
+    # global ALL_PROPS
+    global selected_charge
+    selected_charge = 0
+    n = ALL_PROPS
+    for prop in n:
         prop.free()
 
 def game_restart():
     game_stop()
+    time.sleep(0.1)
+    print(game_level)
     getLevel(game_levels[game_level])
 
 # Game pages
@@ -155,6 +160,16 @@ def free_design_screen():
     global game_state, props_list, player_add
     screen.fill(WHITE)
 
+    top_boundary = WALL(np.array([0, 0]), np.array([800, 13]))
+    left_boundary = WALL(np.array([0, 0]), np.array([13, 486]))
+    bot_boundary = WALL(np.array([0, 484]), np.array([800, 497]))
+    right_boundary = WALL(np.array([787, 0]), np.array([800, 486]))
+
+    top_boundary.draw(screen)
+    left_boundary.draw(screen)
+    bot_boundary.draw(screen)
+    right_boundary.draw(screen)
+
     # Draw existing props
     for prop in props_list:
         prop.draw(screen)
@@ -194,15 +209,15 @@ def free_design_screen():
                 }
                 for p in props_list:
                     if p.prop_id == -1:
-                        data["player"] = list(p.position)
+                        data["player"] = p.position.tolist()  # Use .tolist() for numpy arrays
                     elif isinstance(p, POINT_CHARGE):
-                        data["charges"].append([list(p.position), p.charge, False])
+                        data["charges"].append([p.position.tolist(), p.charge, False])  # Use .tolist()
                     elif isinstance(p, WIRE):
-                        data['wires'].append([list(p.start), list(p.end), p.current])
+                        data["wires"].append([p.start.tolist(), p.end.tolist(), p.current])  # Use .tolist()
                     elif isinstance(p, WIN):
-                        data['win'].append([list(p.tl), list(p.br)])
+                        data["win"].append([p.tl.tolist(), p.br.tolist()])  # Use .tolist()
                     elif isinstance(p, SOLENOID):
-                        data['solenoids'].append([list(p.position), p.current])
+                        data["solenoids"].append([p.position.tolist(), p.current])  # Use .tolist()
                 # Serialize to JSON
                 json_output = json.dumps(data, indent=4)
 
@@ -226,12 +241,12 @@ def free_design_screen():
     pygame.display.flip()
 
 def draw_win_page():
-     global game_state
-     my_img = pygame.transform.scale_by(win_img, 0.75)
-     screen.blit(my_img, ((SCREEN_WIDTH - my_img.get_width()) / 2, (SCREEN_HEIGHT - my_img.get_height()) / 2))
-     print(pygame.mouse.get_pos())
-     mouse_x, mouse_y = pygame.mouse.get_pos()
-     if(pygame.mouse.get_pressed()[0] == 1):
+    global game_state
+    global game_level
+    my_img = pygame.transform.scale_by(win_img, 0.75)
+    screen.blit(my_img, ((SCREEN_WIDTH - my_img.get_width()) / 2, (SCREEN_HEIGHT - my_img.get_height()) / 2))
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+    if(pygame.mouse.get_pressed()[0] == 1):
         if(mouse_x > 158 and mouse_x < 354 and mouse_y > 371 and mouse_y < 456):
             # go back
             render_E_simulation = False
@@ -239,15 +254,12 @@ def draw_win_page():
             global game_state
             game_state = "start_page"
         if(mouse_x > 447 and mouse_x < 642 and mouse_y > 371 and mouse_y < 456):
-             # next nevel
-             game_stop()
-             global game_level
-             game_level += 1
-             game_state = "game"
-             getLevel(game_levels[game_level])
+                # next nevel
+                game_level += 1
+                game_state = "game"
 
-    
-     pygame.display.flip()
+                game_restart()
+    pygame.display.flip()
 
 
 def draw_lose_page():
@@ -256,10 +268,16 @@ def draw_lose_page():
     render_E_simulation = False
     global render_B_simulation
     render_B_simulation = False
-    screen.blit(lose_img, (0,0))
-    if retry_btn.draw(screen): 
-         game_state = 'game'
-         game_restart()
+
+    my_img = pygame.transform.scale_by(lose_img, 0.75)
+    screen.blit(my_img, ((SCREEN_WIDTH - my_img.get_width()) / 2, (SCREEN_HEIGHT - my_img.get_height()) / 2))
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+    if(pygame.mouse.get_pressed()[0] == 1):
+        if(mouse_x > 302 and mouse_x < 496 and mouse_y > 381 and mouse_y < 465):
+            render_E_simulation = False
+            render_B_simulation = False
+            game_state="game"
+            game_restart()
     # screen.fill(WHITE)
     # lose_text = font.render("LOSE", True, RED)
     # text_rect = lose_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
@@ -355,10 +373,9 @@ def draw_game():
     if current_tile != -1:  # Only highlight if a button is selected
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect, 3)
 
-    if selected_charge:
-        selected_charge.draw(screen)
     # Highlight the selected charge
     if selected_charge:
+        selected_charge.draw(screen)
         pygame.draw.rect(screen, GRAY, selected_charge.rect.inflate(4, 4), 3)
     
     for object in ALL_PROPS:

@@ -30,7 +30,7 @@ class Props(object):
         global ALL_PROPS
         if self in ALL_PROPS:
             ALL_PROPS.remove(self)
-        del self
+        self.__dict__.clear()
 
     def handle_event(self, event):
         """Handle mouse events for dragging."""
@@ -50,6 +50,8 @@ class Props(object):
 
                 if(isinstance(self, POINT_CHARGE)):
                     self.position = np.array([self.rect.x + 15, self.rect.y + 15])
+                elif(isinstance(self, SOLENOID)):
+                    self.position = np.array([self.rect.x + 30, self.rect.y + 30])
                 else:
                     self.position = np.array([self.rect.x, self.rect.y])
 
@@ -187,9 +189,12 @@ class POINT_CHARGE(Props):
         b = net_B(self.position, self.prop_id)
         b_force = np.array([self.velocity[1] * b, -self.velocity[0] * b])
         em_force = e_force + b_force
+        velocity_norm = np.linalg.norm(self.velocity)
         if(np.max(self.velocity) < 0.01 and np.linalg.norm(em_force) < FRICTION):
             self.velocity = np.array([0, 0])
-            return np.array([0, 0])
+            return np.array([0, 0]) 
+        elif(velocity_norm < 0.01):
+            return em_force
         else:
             return em_force - FRICTION * self.velocity / np.linalg.norm(self.velocity)
 
@@ -260,7 +265,6 @@ class PLAYER(POINT_CHARGE):
             elif isinstance(p, WIN):
                 if p.rect.colliderect(self.rect):
                     print("You Win")
-                    # TODO: Implement winning screen
                     return 'win'
 
 
