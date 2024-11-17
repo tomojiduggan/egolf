@@ -1,30 +1,14 @@
-import Global_Var as Global_Var
-from physics.phys_utils import *
-
 import pygame
-import numpy as np
 import button
-from physics.props import *
+import sys
+import Global_Var as Global_Var
+from physics.props import WIRE, POINT_CHARGE, SOLENOID
 
-from visualize import visualize_E
-
-# Import pygame.locals for easier access to key coordinates
-# Updated to conform to flake8 and black standards
-from pygame.locals import (
-    K_UP,
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
-    K_ESCAPE,
-    KEYDOWN,
-    QUIT,
-)
-
-# Initialize pygame
 pygame.init()
+# Screen dimensions
+SCREEN_WIDTH = Global_Var.SCREEN_WIDTH
+SCREEN_HEIGHT = Global_Var.SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
-pygame.display.set_caption('E-Golf!')
 pygame.display.set_caption("Electromagnetic Golf")
 # Colors
 WHITE = (255, 255, 255)
@@ -41,14 +25,6 @@ button_x = (SCREEN_WIDTH - button_width) // 2
 button_y = (SCREEN_HEIGHT - button_height) // 2
 
 # Game state
-class GAME_STATE:
-    # Possible states: "title", "play", "pause"
-    def __init__(self):
-        self.state = "title"
-
-    def changeState(self, state):
-        self.state = state
-
 game_state = "title"
 
 # Load background image
@@ -182,48 +158,9 @@ def draw_game():
     pygame.display.flip()
 
 
-# Define constants for the screen width and height
-
-# Create the screen object
-# The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 
 
-
-def startGame():
-    player = PLAYER(np.array([40, 40]))
-
-    # staticCharge = POINT_CHARGE(np.array([200, 200]), -1, False)
-    wire = WIRE(np.array([0, 200]), np.array([1000, 200]), -0.01)
-    player.velocity = np.array([50, 0])
-    run(player)
-
-def shoot_phase(player):
-    for object in ALL_PROPS:
-        object.draw(screen)
-    # print(pygame.mouse.get_pos())
-
-    
-def move_phase(player):
-    for object in ALL_PROPS:
-        object.update()
-        player.handle_collisions()
-        object.draw(screen)
-    
-
-def run(player):
-    while(1):
-        screen.fill((255, 255, 255))
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                break
-        if(np.max(player.velocity) == 0):
-            shoot_phase(player)
-        else:
-            move_phase(player)
-
-        pygame.display.flip()
-
-# startGame()
+# Main loop
 running = True
 while running:
     for event in pygame.event.get():
@@ -234,7 +171,7 @@ while running:
     if game_state == "title":
         draw_title_screen()
     elif game_state == "start_page":
-        startGame()
+        draw_start_page()
     elif game_state == "game":
         draw_game()
     elif game_state == "free_design":
@@ -243,4 +180,8 @@ while running:
     # Update the display
     pygame.display.flip()
 
+# Quit Pygame
 pygame.quit()
+sys.exit()
+
+

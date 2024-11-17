@@ -17,6 +17,7 @@ class Props(object):
         self.has_E = False
         self.has_B = False
         ALL_PROPS.append(self)
+    
 
     def update(self):
         return
@@ -49,11 +50,13 @@ class WIRE(Props):
     def __init__(self, start, end, current):  # start and end are positions of the two ends of the wire
         self.position = (end - start) / 2
         self.movable = False
+        super().__init__((end - start) / 2, False)
         
         self.start = start
         self.end = end
         self.vec_l = end - start
         self.current = current
+        self.has_B = True
 
     def b_field(self, r):
         x1_r = r - self.start
@@ -69,6 +72,12 @@ class WIRE(Props):
             return -norm_b_phi
         else:
             return 0
+
+    def update(self):
+        return
+
+    def draw(self, screen):
+        return
 
     def current_swap(self):
         self.current *= -1
@@ -105,7 +114,8 @@ class POINT_CHARGE(Props):
         b = net_B(self.position, self.prop_id)
         b_force = np.array([self.velocity[1] * b, -self.velocity[0] * b])
         em_force = e_force + b_force
-        if(np.max(self.velocity) == 0 and np.linalg.norm(em_force) < FRICTION):
+        if(np.max(self.velocity) < 0.001 and np.linalg.norm(em_force) < FRICTION):
+            self.velocity = np.array([0, 0])
             return np.array([0, 0])
         else:
             return em_force - FRICTION * self.velocity / np.linalg.norm(self.velocity)
@@ -219,7 +229,7 @@ class SOLENOID(Props):
                 self.rect.y = event.pos[1] + self.offset_y
                 self.position = [self.rect.x, self.rect.y]
 
-    def magnetic_field(self, point):
+    def b_field(self, point):
         """
         Calculate the magnetic field at a given point using the short solenoid approximation.
 
