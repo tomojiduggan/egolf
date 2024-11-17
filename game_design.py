@@ -87,7 +87,6 @@ B_button = button.Button(550, SCREEN_HEIGHT - 100, B_img, 0.3)
 run = True
 paused = False
 
-
 def pause_game():
     print("Pausing the game...")
     # Add code here to pause the game, e.g., freeze the game loop or display a pause screen.
@@ -98,45 +97,30 @@ def back_to_title():
     game_state = 'start_page'
     
 
-global props_list 
-props_list = []
-# Create the free design screen
-def free_design_screen():
-    global game_state, props_list  # Declare globals at the start
 
-    selected_prop = None
-    dragging = False
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Check if a prop is clicked
-            mouse_pos = pygame.mouse.get_pos()
-            for prop in reversed(props_list):  # Check topmost props first
-                if prop.rect.collidepoint(mouse_pos):
-                    selected_prop = prop
-                    dragging = True
-                    break
-        elif event.type == pygame.MOUSEBUTTONUP:
-            # Release the selected prop
-            if dragging:
-                dragging = False
-                selected_prop = None
-        elif event.type == pygame.MOUSEMOTION:
-            # Drag the selected prop
-            if dragging and selected_prop:
-                selected_prop.set_position(pygame.mouse.get_pos())
+def draw_game():
+    """Draw the game screen."""
+    global paused  # Ensure `paused` is accessible
 
-    """Draw the free design screen."""
+    # Clear the screen
     screen.fill(WHITE)
 
-    # Draw existing props
-    for prop in props_list:
-        prop.draw(screen)
-    
-    button_list = [add_wire_button, add_charge_button, add_solenoid_button, add_block_button, add_back_button, add_save_button]
+    # The inner playable size excluding the width of bounday is 772x470
+    # That is, top left (14, 14) to bot right (786, 484)
+    # Draw Boundary
+    top_boundary = WALL(np.array([11, 11]), np.array([789, 13]))
+    left_boundary = WALL(np.array([11, 11]), np.array([13, 486]))
+    bot_boundary = WALL(np.array([13, 484]), np.array([789, 486]))
+    right_boundary = WALL(np.array([787, 11]), np.array([789, 486]))
+
+    top_boundary.draw(screen)
+    left_boundary.draw(screen)
+    bot_boundary.draw(screen)
+    right_boundary.draw(screen)
+
+    # Define button list
+    button_list = [restart_button, pause_button, place_button, swap_button, E_button, B_button,back_button]
 
     # Initialize game state
     current_tile = -1
@@ -144,25 +128,29 @@ def free_design_screen():
     # Draw buttons and check interactions
     for button_count, button in enumerate(button_list):
         if button.draw(screen):  # Draw the button and check if clicked
-            current_tile = button_count  # Update current selected tile if clicked 
+            current_tile = button_count  # Update current selected tile if clicked
             # Call the corresponding function based on the button clicked
             if current_tile == 0:  # Restart Button
-                wire = WIRE((100, 100), (150, 150), 2)
-                props_list.append(wire)
+                print("Restarting the game...")
             elif current_tile == 1:  # Pause Button
-                charge = POINT_CHARGE((200, 200), 1, False)
-                props_list.append(charge)
+                paused = not paused
+                pause_game() if paused else print("Game Resumed")
             elif current_tile == 2:  # Place Button
-                solenoid = SOLENOID(50, 1, [0,0,1], [200,200])
-                props_list.append(solenoid)
+                print("Placing charge...")
             elif current_tile == 3:  # Swap Button
-                pass
+                print("Swapping objects...")
             elif current_tile == 4:  # Extra Action Button E
-                back_to_title()
+                print("Performing extra action E...")
             elif current_tile == 5:  # Extra Action Button B
-                pass
-    # Highlight the selected button with a gray border
-    if current_tile != -1:  
-        pygame.draw.rect(screen, GRAY, button_list[current_tile].rect,3)  # Add padding around the button
+                print("Performing extra action B...")
+                # extra_action_B()
+
+    # Highlight the selected tile with a gray border
+    if current_tile != -1:  # Only highlight if a button is selected
+        pygame.draw.rect(screen, GRAY, button_list[current_tile].rect, 3)
+
+
+
+
     # Update the display
     pygame.display.flip()
