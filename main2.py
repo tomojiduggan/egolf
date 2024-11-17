@@ -12,13 +12,9 @@ from visualize import visualize_E
 from runlevel import getLevel
 from map_design import free_design_screen
 
-# Simulation Code
-# Controlled by buttons
-render_E_simulation = False
-render_B_simulation = False
+from load_images import *
 
-E_sim_layer = pygame.Surface((400, 400), pygame.SRCALPHA)
-B_sim_layer = pygame.Surface((400, 400), pygame.SRCALPHA)
+
 
 
 pygame.init()
@@ -62,45 +58,6 @@ button_y = (SCREEN_HEIGHT - button_height) // 2
 game_state = "title"
 game_level = "level1.json"
 
-# Load background image
-background_image = pygame.image.load("pictures/screen_cov.webp")  # Replace with your file path
-background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))  # Resize to fit the screen
-start_button_image = pygame.image.load("pictures/start_btn.png")
-free_design_image = pygame.image.load("pictures/place_btn.png")
-start_button = button.Button((SCREEN_WIDTH - start_button_image.get_width() * 0.5)// 2, SCREEN_HEIGHT-70, start_button_image, 0.5)
-start_game_image = pygame.image.load("pictures/start_btn.png")
-# load start page buttons
-game_img = pygame.image.load('pictures/game.jpg')
-new_game = button.Button(SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2, game_img, 0.06)
-free_design_image = pygame.image.load('pictures/map_design.jpg')
-free_design = button.Button(SCREEN_WIDTH // 2 + 50, SCREEN_HEIGHT // 2 , free_design_image, 0.06)
-# load design page buttons
-add_wire_image = pygame.image.load('pictures/add_wire.png')
-add_wire_button = button.Button(50, SCREEN_HEIGHT - 100, add_wire_image, 0.04)
-add_charge_image = pygame.image.load('pictures/add_charge.png')
-add_charge_button = button.Button(150, SCREEN_HEIGHT - 100, add_charge_image, 0.04)
-add_solenoid_image = pygame.image.load('pictures/add_solenoid.png')
-add_solenoid_button = button.Button(250, SCREEN_HEIGHT - 100, add_solenoid_image, 0.04)
-add_block_image = pygame.image.load('pictures/add_block.png')
-add_block_button = button.Button(350, SCREEN_HEIGHT - 100, add_block_image, 0.04)
-add_back_image = pygame.image.load('pictures/back.png')
-back_button = button.Button(650, SCREEN_HEIGHT - 100, add_back_image, 0.04)
-add_back_button = button.Button(450, SCREEN_HEIGHT - 100, add_back_image, 0.04)
-add_save_image = pygame.image.load('pictures/save.png')
-add_save_button = button.Button(550, SCREEN_HEIGHT - 100, add_save_image, 0.04)
-# load game play button images
-restart_img = pygame.image.load('pictures/restart_btn.png', ).convert_alpha()
-restart_button = button.Button(50, SCREEN_HEIGHT - 100, restart_img, 0.3)
-pause_img = pygame.image.load('pictures/pause_btn.png').convert_alpha()
-pause_button = button.Button(150, SCREEN_HEIGHT - 100, pause_img, 0.3)
-place_img = pygame.image.load('pictures/place_btn.png').convert_alpha()
-place_button = button.Button(250, SCREEN_HEIGHT - 100, place_img, 0.3)
-swap_img = pygame.image.load('pictures/swap_btn.png').convert_alpha()
-swap_button = button.Button(350, SCREEN_HEIGHT - 100, swap_img, 0.3)
-E_img = pygame.image.load('pictures/E_btn.png').convert_alpha()
-E_button = button.Button(450, SCREEN_HEIGHT - 100, E_img, 0.3)
-B_img = pygame.image.load('pictures/B_btn.png').convert_alpha()
-B_button = button.Button(550, SCREEN_HEIGHT - 100, B_img, 0.3)
 
 run = True
 paused = False
@@ -235,7 +192,18 @@ def run_launch(player):
         player.velocity = LAUNCH_SPEED * direction / np.linalg.norm(direction)
 
 
+# Simulation Code
+# Controlled by buttons
+render_E_simulation = False
+render_B_simulation = False
+
+E_sim_layer = pygame.Surface((400, 400), pygame.SRCALPHA)
+B_sim_layer = pygame.Surface((400, 400), pygame.SRCALPHA)
+
+
 def draw_game():
+    global render_E_simulation, render_B_simulation
+
     """Draw the game screen."""
     global paused  # Ensure `paused` is accessible
 
@@ -280,7 +248,7 @@ def draw_game():
                 print("Plotting the electric field")
                 # Turn on/off the electric field
                 render_E_simulation = not render_E_simulation
-
+                print(render_E_simulation)
                 # After toggle if it is off state, clear the screen
                 if not render_E_simulation:
                     E_sim_layer.fill((0, 0, 0, 0))
@@ -305,8 +273,6 @@ def draw_game():
     # Update the display
     pygame.display.flip()
 
-def draw_E_sim_layer():
-    visualize_E(E_sim_layer)
 
 def draw_B_sim_layer():
     #TODO
@@ -330,7 +296,8 @@ while running:
         free_design_screen()
 
     if render_E_simulation:
-        draw_E_sim_layer()
+        visualize_E(E_sim_layer)
+        screen.blit(E_sim_layer, (0, 0))
     if render_B_simulation:
         draw_B_sim_layer()
 
