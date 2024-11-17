@@ -282,7 +282,7 @@ class PLAYER(POINT_CHARGE):
 class SOLENOID(Props):
     # Removed num_loops (same as putting current * n)
     # Removed direction (Say +I is counterclockwise, say -I is clockwise)
-    def __init__(self, current, position,movable=True):
+    def __init__(self, position, current, movable=True):
         super().__init__(position, movable)
         self.current = current
         self.position = position 

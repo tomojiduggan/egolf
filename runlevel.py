@@ -40,6 +40,10 @@ def getLevel(filename):
     for charge in levelObj["charges"]:
         charges.append(POINT_CHARGE(np.array(charge[0]), charge[1], charge[2]))
 
+    solenoids = []
+    for solenoid in levelObj["solenoids"]:
+        solenoids.append(SOLENOID(np.array(solenoid[0]), solenoid[1]))
+
 
     
     return player
