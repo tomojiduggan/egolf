@@ -178,10 +178,10 @@ class PLAYER(POINT_CHARGE):
 
 
 class SOLENOID(Props):
-    def __init__(self, num_loops, current, direction, position, image_path):
-        self.num_loops = num_loops
+    # Removed num_loops (same as putting current * n)
+    # Removed direction (Say +I is counterclockwise, say -I is clockwise)
+    def __init__(self, current, position, image_path):
         self.current = current
-        self.direction = np.array(direction) / np.linalg.norm(direction)  # Normalize the direction vector
         self.position = list(position)  # Convert to list for mutability
         self.image = pygame.image.load(image_path)
         self.rect = self.image.get_rect(topleft=self.position)
@@ -221,15 +221,15 @@ class SOLENOID(Props):
         """
         # mu_0 = 4 * np.pi * 1e-7  # Magnetic constant (T·m/A)
         mu_0 = 1e-3
-        n = self.num_loops / self.length  # Turns per unit length
+        n = 1 / self.length  # Turns per unit length
 
         # Convert point to a numpy array and find relative position
         point = np.array(point)
-        dx, dy = point[:2] - self.position[:2]
+        dx, dy = point - self.position
         r = np.sqrt(dx**2 + dy**2)  # Distance in 2D plane
 
         # Short solenoid approximation for field strength
-        B_magnitude = mu_0 * n * self.current / 2
+        B_magnitude = mu_0 * self.current / 2
 
         # Decay field for global effect (outside solenoid)
         decay_factor = self.length / (self.length + r)  # Approximate global influence
