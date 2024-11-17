@@ -12,10 +12,27 @@ SCREEN_HEIGHT = Global_Var.SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Electromagnetic Golf")
 # Colors
+# Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
 BLUE = (0, 0, 255)
+
+ROWS = 15
+MAX_COLS = 150
+TILE_SIZE = SCREEN_HEIGHT // ROWS
+TILE_TYPES = 4
+level = 0
+current_tile = 0
+
+img_list = []
+minus_charge_img = pygame.image.load('pictures/minu_charge.png').convert_alpha()
+minus_charge_img = pygame.transform.scale(minus_charge_img, (TILE_SIZE, TILE_SIZE))
+plus_charge_img = pygame.image.load('pictures/plus_charge.png').convert_alpha()
+minus_charge_img = pygame.transform.scale(plus_charge_img, (TILE_SIZE, TILE_SIZE))
+solenoid_img = pygame.image.load('pictures/solenoid.png').convert_alpha()
+solenoid_img = pygame.transform.scale(solenoid_img, (TILE_SIZE, TILE_SIZE))
+img_list = [minus_charge_img, plus_charge_img,solenoid_img]
 # Fonts
 font = pygame.font.Font(None, 74)
 button_font = pygame.font.Font(None, 20)
@@ -79,8 +96,48 @@ def back_to_title():
     global game_state
     print("Returning to title screen...")
     game_state = 'start_page'
-
+    
+    
 # Game pages
+#create empty tile list
+world_data = []
+for row in range(ROWS):
+	r = [-1] * MAX_COLS
+	world_data.append(r)
+
+#create ground
+for tile in range(0, MAX_COLS):
+	world_data[ROWS - 1][tile] = 0
+
+
+#function for outputting text onto the screen
+def draw_text(text, font, text_col, x, y):
+	img = font.render(text, True, text_col)
+	screen.blit(img, (x, y))
+
+#create function for drawing background
+
+
+#draw grid
+def draw_grid():
+	#vertical lines
+	for c in range(MAX_COLS + 1):
+		pygame.draw.line(screen, WHITE, (c * TILE_SIZE , 0), (c * TILE_SIZE, SCREEN_HEIGHT))
+	#horizontal lines
+	for c in range(ROWS + 1):
+		pygame.draw.line(screen, WHITE, (0, c * TILE_SIZE), (SCREEN_WIDTH, c * TILE_SIZE))
+
+
+#function for drawing the world tiles
+def draw_world():
+	for y, row in enumerate(world_data):
+		for x, tile in enumerate(row):
+			if tile >= 0:
+				screen.blit(img_list[tile], (x * TILE_SIZE, y * TILE_SIZE))
+
+
+
+
 def draw_title_screen():
     """Draw the title screen with a Start button."""
     global game_state 
