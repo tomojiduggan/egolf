@@ -72,13 +72,13 @@ def back_to_title():
     print("Returning to title screen...")
     game_state = 'start_page'
         
-def restart():
-    print(ALL_PROPS)
+def game_stop(): 
     n = len(ALL_PROPS)
     for i in range(n):
         ALL_PROPS.pop()
 
-    # ALL_PROPS = []
+def game_restart():
+    game_stop()
     getLevel(game_level)
 
 # Game pages
@@ -139,7 +139,7 @@ def draw_start_page():
     if free_design.draw(screen):
         game_state = "free_design"
 
-
+# FREE DESIGN SECTION
 props_list = []
 # Create the free design screen
 def free_design_screen():
@@ -235,8 +235,7 @@ def draw_game():
             current_tile = button_count  # Update current selected tile if clicked
             # Call the corresponding function based on the button clicked
             if current_tile == 0:  # Restart Button
-                print("Restarting the game...")
-                restart()
+                game_restart()
             elif current_tile == 1:  # Pause Button
                 paused = not paused
                 pause_game() if paused else print("Game Resumed")
@@ -254,8 +253,13 @@ def draw_game():
                     E_sim_layer.fill((0, 0, 0, 0))
 
             elif current_tile == 5:  # Extra Action Button B
-                print("Plotting the magnetic field")
-
+                print("Performing extra action B...")
+                # extra_action_B()
+            elif current_tile == 6: # Back button
+                game_stop()
+                global game_state
+                game_state = "start_page"
+                return
 
     # Highlight the selected tile with a gray border
     if current_tile != -1:  # Only highlight if a button is selected
