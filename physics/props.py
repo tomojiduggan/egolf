@@ -46,8 +46,8 @@ class WALL(REGION):
     Wall class representing perfectly elastic boxes that interacts with collision (objected decleared this class will
     be checked with collision system.
     """
-    def __init__(self, tl, br):
-        super().__init__(tl, br)
+    def __init__(self, tl, br, color=(0,0,0)):
+        super().__init__(tl, br, color=color)
 
 class WIN(REGION):
     """
