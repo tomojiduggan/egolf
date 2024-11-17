@@ -57,7 +57,8 @@ button_y = (SCREEN_HEIGHT - button_height) // 2
 
 # Game state
 game_state = "title"
-game_level = "level1.json"
+game_level = 0
+game_levels = ["level1.json", "level2.json", "level3.json"]
 
 
 run = True
@@ -81,7 +82,7 @@ def game_stop():
 
 def game_restart():
     game_stop()
-    getLevel(game_level)
+    getLevel(game_levels[game_level])
 
 # Game pages
 #create empty tile list
@@ -137,8 +138,8 @@ def draw_start_page():
     if new_game.draw(screen):
         game_stop()
         game_state = "game"
-        game_level = "level1.json"
-        getLevel(game_level)
+        game_level = 0
+        getLevel(game_levels[game_level])
     if free_design.draw(screen):
         game_state = "free_design"
 
@@ -187,7 +188,26 @@ def free_design_screen():
 
 def draw_win_page():
      global game_state
-     screen.blit(win_img, (0, 0))
+     my_img = pygame.transform.scale_by(win_img, 0.75)
+     screen.blit(my_img, ((SCREEN_WIDTH - my_img.get_width()) / 2, (SCREEN_HEIGHT - my_img.get_height()) / 2))
+     print(pygame.mouse.get_pos())
+     mouse_x, mouse_y = pygame.mouse.get_pos()
+     if(pygame.mouse.get_pressed()[0] == 1):
+        if(mouse_x > 158 and mouse_x < 354 and mouse_y > 371 and mouse_y < 456):
+            # go back
+            render_E_simulation = False
+            game_stop()
+            global game_state
+            game_state = "start_page"
+        if(mouse_x > 447 and mouse_x < 642 and mouse_y > 371 and mouse_y < 456):
+             # next nevel
+             game_stop()
+             global game_level
+             game_level += 1
+             game_state = "game"
+             getLevel(game_levels[game_level])
+
+    
      pygame.display.flip()
 
 
