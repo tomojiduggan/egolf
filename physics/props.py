@@ -7,8 +7,6 @@ from physics.phys_utils import *
 # from main import screen
 import pygame
 
-
-
 class Props(object):
     def __init__(self, position, movable):
         self.position = position
@@ -69,6 +67,7 @@ class WIRE(Props):
         self.vec_l = end - start
         self.current = current
         self.has_B = True
+        self.has_B = True
 
     def b_field(self, r):
         x1_r = r - self.start
@@ -91,6 +90,12 @@ class WIRE(Props):
     def draw(self, screen):
         return
 
+    def update(self):
+        return
+
+    def draw(self, screen):
+        return
+
     def current_swap(self):
         self.current *= -1
 
@@ -104,6 +109,7 @@ class POINT_CHARGE(Props):
         self.radius = 15
         self.image_path = "img/charge.jpg"
         self.has_E = True
+        self.image_path = 'pictures/plus_charge.png'
         if(movable):
             self.has_B = True
 
@@ -218,18 +224,18 @@ class SOLENOID(Props):
     def __init__(self, current, position, image_path):
         self.current = current
         self.position = list(position)  # Convert to list for mutability
-        self.image = pygame.image.load(image_path)
-        self.rect = self.image.get_rect(topleft=self.position)
-        self.length = self.rect.width  # Assuming the solenoid is a rectangle
+        self.image_path = 'pictures/solenoid.png'
         self.movable = True
         self.is_dragging = False
-
         self.has_B = True
 
     def draw(self, screen):
-        """Draw the solenoid on the screen."""
-        screen.blit(self.image, self.rect)
-
+        image = pygame.image.load(self.image_path)
+        # pygame.transform.scale_by(image, )
+        image = pygame.transform.scale(image, (30, 30))
+        self.rect =image.get_rect(topleft=self.position)
+        self.length = self.rect.width
+        screen.blit(image, image.get_rect(center=self.position))
     def handle_event(self, event):
         """Handle mouse events for dragging."""
         if event.type == pygame.MOUSEBUTTONDOWN:
