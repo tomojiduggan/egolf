@@ -179,7 +179,8 @@ def free_design_screen():
                 solenoid = SOLENOID(50, np.array([200, 200]))
                 props_list.append(solenoid)
             elif current_tile == 3:  # Add Block
-                pass
+                block = BRICK(np.array([100, 100]), np.array([150, 150]))
+                props_list.append(block)
             elif current_tile == 4:  # Back to Title
                 back_to_title()
             elif current_tile == 5:  # Save (currently no action)
