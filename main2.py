@@ -317,8 +317,8 @@ def draw_game():
     global render_E_simulation
     screen.blit(game_cover_image, (0, 0))
 
-    # Clear the screen
-    screen.fill(WHITE)
+    # # Clear the screen
+    # screen.fill(WHITE)
 
     # The inner playable size excluding the width of bounday is 772x470
     # That is, top left (14, 14) to bot right (786, 484)

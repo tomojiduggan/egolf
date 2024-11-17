@@ -102,6 +102,7 @@ class WIN(REGION):
     """
     def __init__(self, tl, br):
         super().__init__(tl, br)
+        self.color = (131, 225, 181)
 
 class WIRE(Props):
     def __init__(self, start, end, current):  # start and end are positions of the two ends of the wire
