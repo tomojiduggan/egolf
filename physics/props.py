@@ -7,8 +7,6 @@ from physics.phys_utils import *
 # from main import screen
 import pygame
 
-
-
 class Props(object):
     def __init__(self, position, movable):
         self.position = position
@@ -17,6 +15,7 @@ class Props(object):
         self.has_E = False
         self.has_B = False
         ALL_PROPS.append(self)
+    
 
 class REGION(Props):
     """
@@ -48,11 +47,13 @@ class WIRE(Props):
     def __init__(self, start, end, current):  # start and end are positions of the two ends of the wire
         self.position = (end - start) / 2
         self.movable = False
+        super().__init__((end - start) / 2, False)
         
         self.start = start
         self.end = end
         self.vec_l = end - start
         self.current = current
+        self.has_B = True
 
     def b_field(self, r):
         x1_r = r - self.start
@@ -69,6 +70,12 @@ class WIRE(Props):
         else:
             return 0
 
+    def update(self):
+        return
+
+    def draw(self, screen):
+        return
+
     def current_swap(self):
         self.current *= -1
 
@@ -82,6 +89,7 @@ class POINT_CHARGE(Props):
         self.radius = 15
         self.image_path = "img/charge.jpg"
         self.has_E = True
+        self.image_path = 'pictures/plus_charge.png'
         if(movable):
             self.has_B = True
 
@@ -169,12 +177,12 @@ class PLAYER(POINT_CHARGE):
 
 
 class SOLENOID(Props):
-    def __init__(self, num_loops, current, direction, position, image_path):
+    def __init__(self, num_loops, current, direction, position):
         self.num_loops = num_loops
         self.current = current
         self.direction = np.array(direction) / np.linalg.norm(direction)  # Normalize the direction vector
         self.position = list(position)  # Convert to list for mutability
-        self.image = pygame.image.load(image_path)
+        self.image = pygame.image.load('pictures/solenoid.png')
         self.rect = self.image.get_rect(topleft=self.position)
         self.length = self.rect.width  # Assuming the solenoid is a rectangle
         self.movable = True

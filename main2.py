@@ -1,7 +1,6 @@
 import pygame
 import button
 import sys
-import numpy as np
 import Global_Var as Global_Var
 from physics.props import WIRE, POINT_CHARGE, SOLENOID
 import numpy as np
@@ -12,38 +11,14 @@ SCREEN_WIDTH = Global_Var.SCREEN_WIDTH
 SCREEN_HEIGHT = Global_Var.SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Electromagnetic Golf")
-
-
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
 BLUE = (0, 0, 255)
-
-ROWS = 15
-MAX_COLS = 150
-TILE_SIZE = SCREEN_HEIGHT // ROWS
-TILE_TYPES = 21
-level = 0
-current_tile = 0
-#create empty tile list
-world_data = []
-for row in range(ROWS):
-	r = [-1] * MAX_COLS
-	world_data.append(r)
-
-#create ground
-for tile in range(0, MAX_COLS):
-	world_data[ROWS - 1][tile] = 0
-
-
-#function for outputting text onto the screen
-def draw_text(text, font, text_col, x, y):
-	img = font.render(text, True, text_col)
-	screen.blit(img, (x, y))
-
-
-
+# Fonts
+font = pygame.font.Font(None, 74)
+button_font = pygame.font.Font(None, 20)
 
 # Button dimensions
 button_width, button_height = 100, 50
@@ -52,9 +27,6 @@ button_y = (SCREEN_HEIGHT - button_height) // 2
 
 # Game state
 game_state = "title"
-
-# Props
-props_list = []  # List to store created props
 
 # Load background image
 background_image = pygame.image.load("pictures/screen_cov.webp")  # Replace with your file path
@@ -99,34 +71,16 @@ run = True
 paused = False
 
 # Button functions
-def restart_game():
-    print("Restarting the game...")
-    # Add code here to reset the game state, e.g., reset score, position, etc.
-
 def pause_game():
     print("Pausing the game...")
     # Add code here to pause the game, e.g., freeze the game loop or display a pause screen.
 
-def place_object():
-    print("Placing object...")
-    # Add code here to place an object in the game, e.g., ball or item placement.
-
-def swap_objects():
-    print("Swapping objects...")
-    # Add code here to swap between two objects in the game.
-
-def extra_action_E():
-    print("Performing extra action E...")
-    # Add code for whatever action the "E" button triggers.
-
-def extra_action_B():
-    print("Performing extra action B...")
-    # Add code for whatever action the "B" button triggers.
 def back_to_title():
     global game_state
     print("Returning to title screen...")
     game_state = 'start_page'
 
+# Game pages
 def draw_title_screen():
     """Draw the title screen with a Start button."""
     global game_state 
@@ -143,6 +97,8 @@ def draw_start_page():
     if free_design.draw(screen):
         game_state = "free_design"
 
+
+props_list = []
 # Create the free design screen
 def free_design_screen():
     """Draw the free design screen."""
@@ -151,28 +107,40 @@ def free_design_screen():
 
     # Draw existing props
     for prop in props_list:
-        if isinstance(prop, WIRE):
-            pygame.draw.line(screen, BLACK, prop.start, prop.end, 3)
-        elif isinstance(prop, POINT_CHARGE):
-            pygame.draw.circle(screen, BLUE, (int(prop.position[0]), int(prop.position[1])), 10)
-        elif isinstance(prop, SOLENOID):
-            prop.draw(screen)  # Solenoid is an image, so just draw it
+        prop.draw(screen)
+    
+    button_list = [add_wire_button, add_charge_button, add_solenoid_button, add_block_button, add_back_button, add_save_button]
 
-    # Draw buttons at the bottom
-    add_wire_button.draw(screen)
-    add_charge_button.draw(screen)
-    add_solenoid_button.draw(screen)
-    add_block_button.draw(screen)
-    add_back_button.draw(screen)
-    add_save_button.draw(screen)
-    
-    if add_save_button.draw(screen):
-		#save level data
-        with open(f'level{level}_data.csv', 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile, delimiter = ',')
-            for row in world_data:
-                writer.writerow(row)
-    
+    # Initialize game state
+    current_tile = -1
+
+    # Draw buttons and check interactions
+    for button_count, button in enumerate(button_list):
+        if button.draw(screen):  # Draw the button and check if clicked
+            current_tile = button_count  # Update current selected tile if clicked 
+            # Call the corresponding function based on the button clicked
+            if current_tile == 0:  # Restart Button
+                wire = WIRE((100, 100), (150, 150), 2)
+                props_list.append(wire)
+            elif current_tile == 1:  # Pause Button
+                charge = POINT_CHARGE((200, 200), 1, False)
+                props_list.append(charge)
+            elif current_tile == 2:  # Place Button
+                solenoid = SOLENOID(50, 1, [0,0,1], [200,200])
+                props_list.append(solenoid)
+            elif current_tile == 3:  # Swap Button
+                pass
+            elif current_tile == 4:  # Extra Action Button E
+                back_to_title()
+            elif current_tile == 5:  # Extra Action Button B
+                pass
+    # Highlight the selected button with a gray border
+    if current_tile != -1:  
+        pygame.draw.rect(screen, GRAY, button_list[current_tile].rect,3)  # Add padding around the button
+    # Update the display
+    pygame.display.flip()
+
+
     # Handle events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -196,7 +164,7 @@ def handle_event(event):
             new_charge = POINT_CHARGE(np.array([300, 300]), 1e-6, True)  # Example position and charge
             props_list.append(new_charge)
         elif add_solenoid_button.rect.collidepoint(event.pos):
-            new_solenoid = SOLENOID(10, 1, [0, 0, 1], [500, 500], 'pictures/solenoid.png')
+            new_solenoid = SOLENOID(10, 1, [0, 0, 1], [500, 500])
             props_list.append(new_solenoid)
         elif add_block_button.rect.collidepoint(event.pos):
             # Create a block (if needed, you can create a simple rectangle object or other)
@@ -219,6 +187,8 @@ def handle_event(event):
             if isinstance(prop, SOLENOID):
                 prop.handle_event(event)
 
+
+
 def draw_game():
     """Draw the game screen."""
     global paused  # Ensure `paused` is accessible
@@ -238,18 +208,18 @@ def draw_game():
             current_tile = button_count  # Update current selected tile if clicked 
             # Call the corresponding function based on the button clicked
             if current_tile == 0:  # Restart Button
-                restart_game()
+                print("Restarting the game...")
             elif current_tile == 1:  # Pause Button
                 paused = not paused
                 pause_game() if paused else print("Game Resumed")
             elif current_tile == 2:  # Place Button
-                place_object()
+                print("Placing charge...")
             elif current_tile == 3:  # Swap Button
-                swap_objects()
+                print("Swapping objects...")
             elif current_tile == 4:  # Extra Action Button E
-                extra_action_E()
+                print("Performing extra action E...")
             elif current_tile == 5:  # Extra Action Button B
-                extra_action_B()
+                print("Performing extra action B...")
             elif current_tile == 6: 
                 back_to_title() # Back Button
     # Highlight the selected button with a gray border
