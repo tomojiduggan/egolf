@@ -20,11 +20,14 @@ class Props(object):
     
 
     def update(self):
+        """
+        on each update, for most prop do nothing
+        """
         return
 
 class REGION(Props):
     """
-
+    Abstract class for rectangular region
     """
     def __init__(self, tl, br, color=(255, 0, 0)):
         super().__init__(np.array([(br[0]-tl[0])/2, (br[1]-tl[1])/2]), False)
@@ -41,10 +44,19 @@ class REGION(Props):
         pygame.draw.rect(screen, self.color, self.rect)
 
 class WALL(REGION):
+    """
+    Wall class representing perfectly elastic boxes that interacts with collision (objected decleared this class will
+    be checked with collision system.
+    """
     def __init__(self, tl, br):
         super().__init__(tl, br)
 
-
+class WIN(REGION):
+    """
+    class representing the rectangular region that represents winning.
+    """
+    def __init__(self, tl, br):
+        super().__init__(tl, br)
 
 class WIRE(Props):
     def __init__(self, start, end, current):  # start and end are positions of the two ends of the wire
@@ -144,7 +156,7 @@ class PLAYER(POINT_CHARGE):
 
     def handle_collisions(self):
         """
-        Checks for collisions with all props, and call their corresponding handle collision
+        Checks for collisions with all props, infer different action depending on colliding object
         """
         for p in ALL_PROPS:
             if isinstance(p, WALL):
@@ -183,9 +195,15 @@ class PLAYER(POINT_CHARGE):
                 if distance - 2 * self.radius <= 0:
                     print("Collision detected", p.position)
 
+            elif isinstance(p, WIN):
+                if p.rect.colliderect(self.rect):
+                    print("You Win")
+                    # TODO: Implement winning screen
+
+
     def update(self):
         """
-        Addition need to update bounding box
+        Addition need to update bounding box on each tick
         """
         super().update()
         self.rect = pygame.Rect(

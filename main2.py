@@ -2,7 +2,7 @@ import pygame
 import button
 import sys
 import Global_Var as Global_Var
-from physics.props import WIRE, POINT_CHARGE, SOLENOID
+from physics.props import *
 
 pygame.init()
 # Screen dimensions
@@ -154,6 +154,8 @@ def draw_game():
     if current_tile != -1:  # Only highlight if a button is selected
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect, 3)
 
+
+    
     # Update the display
     pygame.display.flip()
 
