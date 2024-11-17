@@ -4,6 +4,7 @@ import sys
 import Global_Var as Global_Var
 from physics.props import WIRE, POINT_CHARGE, SOLENOID
 import numpy as np
+from runlevel import getLevel
 
 pygame.init()
 # Screen dimensions
@@ -49,7 +50,7 @@ game_state = "title"
 background_image = pygame.image.load("pictures/screen_cov.webp")  # Replace with your file path
 background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))  # Resize to fit the screen
 start_button_image = pygame.image.load("pictures/start_btn.png")
-free_design_image = pygame.image.load("pictures/place_btn.PNG")
+free_design_image = pygame.image.load("pictures/place_btn.png")
 start_button = button.Button((SCREEN_WIDTH - start_button_image.get_width() * 0.5)// 2, SCREEN_HEIGHT-70, start_button_image, 0.5)
 start_game_image = pygame.image.load("pictures/start_btn.png")
 # load start page buttons
@@ -228,7 +229,8 @@ def draw_game():
             elif current_tile == 4:  # Extra Action Button E
                 print("Performing extra action E...")
             elif current_tile == 5:  # Extra Action Button B
-                extra_action_B()
+                print("Performing extra action B...")
+                # extra_action_B()
 
     # Highlight the selected tile with a gray border
     if current_tile != -1:  # Only highlight if a button is selected

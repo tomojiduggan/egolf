@@ -37,7 +37,7 @@ button_font = pygame.font.Font(None, 36)
 
 # Button dimensions
 button_width, button_height = 200, 50
-button_x = (SCREEN_WIDTH - button_width) // 2
+button_x = (SCREEN_WIDTH - button_width) // 1
 button_y = (SCREEN_HEIGHT - button_height) // 2
 
 # Game state

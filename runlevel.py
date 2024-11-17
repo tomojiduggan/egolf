@@ -1,5 +1,5 @@
 import json
-from main import *
+from physics.props import *
 
 def getLevel(filename):
     levelFile = open(f"levels/{filename}", "r")
@@ -19,10 +19,6 @@ def getLevel(filename):
 
     walls = []
     for wall in levelObj["walls"]:
-        x_vals = [wall[0][0], wall[1][0]]
-        y_vals = [wall[1][0], wall[1][1]]
-        x_bot, y_bot = min(x_vals), min(y_vals)
-        x_top, y_top = max(x_vals), max(y_vals)
-        walls.append(WALL([x_bot, x_top, y_bot, y_top]))
-
-getLevel()
+        walls.append(WALL(np.array(wall[0]), np.array(wall[1])))
+    
+    return player
