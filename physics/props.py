@@ -81,6 +81,21 @@ class WALL(REGION):
     def __init__(self, tl, br, color=(0, 0, 0)):
         super().__init__(tl, br, color=color)
 
+class BRICK(REGION):
+    def __init__(self, tl, br):
+        super().__init__(tl, br)
+        
+        self.distance  = br - tl
+        self.position = tl
+        self.image = pygame.image.load("pictures/brick.png")
+        self.image = pygame.transform.scale(self.image, (50, 50))
+        self.rect = self.image.get_rect(topleft=self.position)
+    def draw(self, screen):
+        self.br = self.position + self.distance
+        self.tl = self.position
+        screen.blit(self.image, self.rect)
+
+
 class WIN(REGION):
     """
     class representing the rectangular region that represents winning.
@@ -274,7 +289,8 @@ class SOLENOID(Props):
         self.image_path = 'pictures/solenoid.png'
         self.image = pygame.image.load(self.image_path)
         self.image = pygame.transform.scale(self.image, (60, 60))
-        self.rect = self.image.get_rect(topleft=self.position-np.array([30,30]))
+        self.length = self.image.get_width()
+        self.rect = self.image.get_rect(topleft=self.position-np.array([50,50]))
         self.movable = True
         self.has_B = True
 
