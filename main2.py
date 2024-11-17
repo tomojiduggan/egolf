@@ -198,8 +198,8 @@ def run_launch(player):
 render_E_simulation = False
 render_B_simulation = False
 
-E_sim_layer = pygame.Surface((400, 400), pygame.SRCALPHA)
-B_sim_layer = pygame.Surface((400, 400), pygame.SRCALPHA)
+E_sim_layer = pygame.Surface((PLAYABLE_WIDTH, PLAYABLE_HEIGHT), pygame.SRCALPHA)
+B_sim_layer = pygame.Surface((PLAYABLE_WIDTH, PLAYABLE_HEIGHT), pygame.SRCALPHA)
 
 
 def draw_game():
@@ -215,10 +215,10 @@ def draw_game():
     # The inner playable size excluding the width of bounday is 772x470
     # That is, top left (14, 14) to bot right (786, 484)
     # Draw Boundary
-    top_boundary = WALL(np.array([11, 11]), np.array([789, 13]))
-    left_boundary = WALL(np.array([11, 11]), np.array([13, 486]))
-    bot_boundary = WALL(np.array([13, 484]), np.array([789, 486]))
-    right_boundary = WALL(np.array([787, 11]), np.array([789, 486]))
+    top_boundary = WALL(np.array([0, 0]), np.array([800, 13]))
+    left_boundary = WALL(np.array([0, 0]), np.array([13, 486]))
+    bot_boundary = WALL(np.array([0, 484]), np.array([800, 497]))
+    right_boundary = WALL(np.array([787, 0]), np.array([800, 486]))
 
     top_boundary.draw(screen)
     left_boundary.draw(screen)
@@ -237,27 +237,31 @@ def draw_game():
             current_tile = button_count  # Update current selected tile if clicked
             # Call the corresponding function based on the button clicked
             if current_tile == 0:  # Restart Button
+                render_E_simulation = False
                 game_restart()
             elif current_tile == 1:  # Pause Button
                 paused = not paused
                 pause_game() if paused else print("Game Resumed")
             elif current_tile == 2:  # Place Button
+                render_E_simulation = False
                 print("Placing charge...")
             elif current_tile == 3:  # Swap Button
+                render_E_simulation = False
                 print("Swapping objects...")
             elif current_tile == 4:  # Extra Action Button E
                 print("Plotting the electric field")
                 # Turn on/off the electric field
                 render_E_simulation = not render_E_simulation
-                print(render_E_simulation)
-                # After toggle if it is off state, clear the screen
-                if not render_E_simulation:
-                    E_sim_layer.fill((0, 0, 0, 0))
+                E_sim_layer.fill((0, 0, 0, 0))
+                visualize_E(E_sim_layer)
+
 
             elif current_tile == 5:  # Extra Action Button B
+                render_E_simulation = False
                 print("Performing extra action B...")
                 # extra_action_B()
             elif current_tile == 6: # Back button
+                render_E_simulation = False
                 game_stop()
                 global game_state
                 game_state = "start_page"
@@ -305,8 +309,12 @@ while running:
         free_design_screen()
 
     if render_E_simulation:
-        visualize_E(E_sim_layer)
+        # E_sim_layer.fill((0, 0, 0, 0))
+        # visualize_E(E_sim_layer)
         screen.blit(E_sim_layer, (0, 0))
+
+
+
     if render_B_simulation:
         draw_B_sim_layer()
 
