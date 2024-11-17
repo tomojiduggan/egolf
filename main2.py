@@ -8,6 +8,8 @@ from runlevel import getLevel
 from map_design import free_design_screen2
 # from game_design import draw_game
 
+import json
+
 from visualize import visualize_E, visualize_B
 from runlevel import getLevel
 import time
@@ -149,17 +151,18 @@ def draw_start_page():
 
 # FREE DESIGN SECTION
 props_list = []
+player_add = False
 # Create the free design screen
 def free_design_screen():
     """Draw the free design screen."""
-    global game_state, props_list
+    global game_state, props_list, player_add
     screen.fill(WHITE)
 
     # Draw existing props
     for prop in props_list:
         prop.draw(screen)
     
-    button_list = [add_wire_button, add_charge_button, add_solenoid_button, add_block_button, add_back_button, add_save_button]
+    button_list = [add_wire_button, add_charge_button, add_solenoid_button, add_block_button, add_back_button, add_save_button, add_player_button]
 
     # Initialize game state
     current_tile = -1
@@ -170,20 +173,54 @@ def free_design_screen():
             current_tile = button_count  # Update current selected tile if clicked 
             # Call the corresponding function based on the button clicked
             if current_tile == 0:  # Add Wire
-                wire = WIRE((100, 100), (150, 150), 2)
+                wire = WIRE(np.array([100, 100]), np.array([150, 150]), 2)
                 props_list.append(wire)
             elif current_tile == 1:  # Add Charge
-                charge = POINT_CHARGE((200, 200), 1, False)
+                charge = POINT_CHARGE(np.array([200, 200]), 1, False)
                 props_list.append(charge)
             elif current_tile == 2:  # Add Solenoid
-                solenoid = SOLENOID(50, (200, 200))
+                solenoid = SOLENOID(50, np.array([200, 200]))
                 props_list.append(solenoid)
             elif current_tile == 3:  # Add Block
                 pass
             elif current_tile == 4:  # Back to Title
                 back_to_title()
             elif current_tile == 5:  # Save (currently no action)
-                pass
+                data= {
+                    "player": None,
+                    "charges": [],
+                    "wires": [],
+                    "walls": [],
+                    "win": [],
+                    "solenoids": []
+                }
+                for p in props_list:
+                    if p.prop_id == -1:
+                        data["player"] = list(p.position)
+                    elif isinstance(p, POINT_CHARGE):
+                        data["charges"].append([list(p.position), p.charge, False])
+                    elif isinstance(p, WIRE):
+                        data['wires'].append([list(p.start), list(p.end), p.current])
+                    elif isinstance(p, WIN):
+                        data['win'].append([list(p.tl), list(p.br)])
+                    elif isinstance(p, SOLENOID):
+                        data['solenoids'].append([list(p.position), p.current])
+                # Serialize to JSON
+                json_output = json.dumps(data, indent=4)
+
+
+                # Save to a file
+                with open("custom_level.json", "w") as file:
+                    file.write(json_output)
+
+                # Output to console
+                print(json_output)
+            elif current_tile == 6: # Add Player
+                if not player_add:
+                    player_add = True
+                    player = PLAYER(np.array([200, 200]))
+                    props_list.append(player)
+
     # Highlight the selected button with a gray border
     if current_tile != -1:  
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect,3)  # Add padding around the button
@@ -210,8 +247,8 @@ def draw_win_page():
 
                 game_restart()
 
-
-    pygame.display.flip()
+    
+     pygame.display.flip()
 
 
 def draw_lose_page():

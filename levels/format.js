@@ -4,4 +4,5 @@ format = {
     "wires": [], // each element is [[start], [end], current]
     "walls": [], // [[top-left], [bottom-right]]
     "win": [], // [[top-left], [bottom-right]]
+    "solenoids": [], // [[position], current]
 }
