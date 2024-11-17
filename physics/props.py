@@ -296,7 +296,7 @@ class SOLENOID(Props):
 
     def draw(self, screen):
         
-        screen.blit(self.image, self.image.get_rect(center=self.position))
+        screen.blit(self.image, self.rect)
 
     def b_field(self, point):
         """

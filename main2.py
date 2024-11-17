@@ -143,7 +143,7 @@ def draw_start_page():
     """Draw the start page."""
     global game_state, game_level
     game_level = 0
-    screen.fill(WHITE)
+    screen.blit(start_background, (0, 0))
     if new_game.draw(screen):
         game_stop()
         game_state = "game"
@@ -159,7 +159,7 @@ player_add = False
 def free_design_screen():
     """Draw the free design screen."""
     global game_state, props_list, player_add
-    screen.fill(WHITE)
+    screen.blit(game_cover_image, (0, 0))
 
     top_boundary = WALL(np.array([0, 0]), np.array([800, 13]))
     left_boundary = WALL(np.array([0, 0]), np.array([13, 486]))
@@ -313,6 +313,7 @@ def draw_game():
     """Draw the game screen."""
     global paused  # Ensure `paused` is accessible
     global render_E_simulation
+    screen.blit(game_cover_image, (0, 0))
 
     # Clear the screen
     screen.fill(WHITE)
