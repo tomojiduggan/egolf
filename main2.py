@@ -267,7 +267,7 @@ def draw_game():
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect, 3)
 
     for object in ALL_PROPS:
-        if not paused:
+        if(not paused):
             object.update()
             
         object.draw(screen)
