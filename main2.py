@@ -1,9 +1,12 @@
 import pygame
 import button
 import sys
-import Global_Var as Global_Var
+from Global_Var import * 
 from physics.props import *
 import numpy as np
+from runlevel import getLevel
+from map_design import free_design_screen
+# from game_design import draw_game
 
 from visualize import visualize_E
 from runlevel import getLevel
@@ -57,6 +60,7 @@ button_y = (SCREEN_HEIGHT - button_height) // 2
 
 # Game state
 game_state = "title"
+game_level = "level1.json"
 
 # Load background image
 background_image = pygame.image.load("pictures/screen_cov.webp")  # Replace with your file path
@@ -110,8 +114,16 @@ def back_to_title():
     global game_state
     print("Returning to title screen...")
     game_state = 'start_page'
-    
-    
+        
+def restart():
+    print(ALL_PROPS)
+    n = len(ALL_PROPS)
+    for i in range(n):
+        ALL_PROPS.pop()
+
+    # ALL_PROPS = []
+    getLevel(game_level)
+
 # Game pages
 #create empty tile list
 world_data = []
@@ -212,6 +224,16 @@ def free_design_screen():
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect,3)  # Add padding around the button
     # Update the display
     pygame.display.flip()
+    
+
+# State where clicking will launch ball
+def run_launch(player):
+    mouse_pos = pygame.mouse.get_pos()
+    direction = np.array(mouse_pos) - player.position
+    norm = np.linalg.norm(direction)
+    if pygame.mouse.get_pressed()[0] == 1 and norm < 100:
+        player.velocity = LAUNCH_SPEED * direction / np.linalg.norm(direction)
+
 
 def draw_game():
     """Draw the game screen."""
@@ -246,6 +268,7 @@ def draw_game():
             # Call the corresponding function based on the button clicked
             if current_tile == 0:  # Restart Button
                 print("Restarting the game...")
+                restart()
             elif current_tile == 1:  # Pause Button
                 paused = not paused
                 pause_game() if paused else print("Game Resumed")
@@ -265,12 +288,19 @@ def draw_game():
             elif current_tile == 5:  # Extra Action Button B
                 print("Plotting the magnetic field")
 
+
     # Highlight the selected tile with a gray border
     if current_tile != -1:  # Only highlight if a button is selected
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect, 3)
 
-
-
+    for object in ALL_PROPS:
+        object.update()
+        object.draw(screen)
+        if(isinstance(object, PLAYER)):
+            player = object
+    player.handle_collisions()
+    if(max(player.velocity) == 0):
+        run_launch(player) # draw arrow, make it so clicking within the screen will launch the player
 
     # Update the display
     pygame.display.flip()
@@ -281,6 +311,7 @@ def draw_E_sim_layer():
 def draw_B_sim_layer():
     #TODO
     pass
+
 # Main loop
 running = True
 while running:
