@@ -8,7 +8,7 @@ from runlevel import getLevel
 from map_design import free_design_screen2
 # from game_design import draw_game
 
-from visualize import visualize_E
+from visualize import visualize_E, visualize_B
 from runlevel import getLevel
 
 
@@ -238,25 +238,32 @@ def draw_game():
             # Call the corresponding function based on the button clicked
             if current_tile == 0:  # Restart Button
                 render_E_simulation = False
+                render_B_simulation = False
                 game_restart()
             elif current_tile == 1:  # Pause Button
                 paused = not paused
                 pause_game() if paused else print("Game Resumed")
             elif current_tile == 2:  # Swap Button
                 render_E_simulation = False
+                render_B_simulation = False
                 print("Swapping objects...")
             elif current_tile == 3:  # Extra Action Button E
                 print("Plotting the electric field")
                 # Turn on/off the electric field
+                render_B_simulation = False
                 render_E_simulation = not render_E_simulation
                 E_sim_layer.fill((0, 0, 0, 0))
                 visualize_E(E_sim_layer)
-            elif current_tile == 5:  # Extra Action Button B
+            elif current_tile == 4:  # Extra Action Button B
                 render_E_simulation = False
-                back_to_title()
-                # extra_action_B()
+                render_B_simulation = not render_B_simulation
+                print(render_B_simulation)
+                B_sim_layer.fill((0, 0, 0, 0))
+                visualize_B(B_sim_layer)
+                #back_to_title()
             elif current_tile == 6: # Back button
                 render_E_simulation = False
+                render_B_simulation = False
                 game_stop()
                 global game_state
                 game_state = "start_page"
@@ -282,10 +289,7 @@ def draw_game():
     pygame.display.flip()
 
 
-def draw_B_sim_layer():
-    #TODO
-    pass
-
+clock = pygame.time.Clock()
 # Main loop
 running = True
 while running:
@@ -304,17 +308,14 @@ while running:
         free_design_screen()
 
     if render_E_simulation:
-        # E_sim_layer.fill((0, 0, 0, 0))
-        # visualize_E(E_sim_layer)
         screen.blit(E_sim_layer, (0, 0))
 
-
-
     if render_B_simulation:
-        draw_B_sim_layer()
+        screen.blit(B_sim_layer, (0, 0))
 
     # Update the display
     pygame.display.flip()
+    clock.tick(60)
 
 # Quit Pygame
 pygame.quit()
