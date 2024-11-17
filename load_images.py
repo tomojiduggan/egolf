@@ -55,7 +55,7 @@ win_img = pygame.transform.scale(win_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # load lose image
 lose_img = pygame.image.load('pictures/fail_page.png')
-lose_img = pygame.transform.scale(lose_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+lose_img = pygame.transform.scale(lose_img, (SCREEN_WIDTH-200, SCREEN_HEIGHT-200))
 retry_img = pygame.image.load('pictures/retry_btn.png')
 retry_btn = button.Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT-150, retry_img, 0.5)
 
