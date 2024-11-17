@@ -79,6 +79,8 @@ def back_to_title():
         
 def game_stop(): 
     # global ALL_PROPS
+    global selected_charge
+    selected_charge = 0
     n = ALL_PROPS
     for prop in n:
         prop.free()
@@ -360,10 +362,9 @@ def draw_game():
     if current_tile != -1:  # Only highlight if a button is selected
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect, 3)
 
-    if selected_charge:
-        selected_charge.draw(screen)
     # Highlight the selected charge
     if selected_charge:
+        selected_charge.draw(screen)
         pygame.draw.rect(screen, GRAY, selected_charge.rect.inflate(4, 4), 3)
     
     for object in ALL_PROPS:
