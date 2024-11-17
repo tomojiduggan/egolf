@@ -120,7 +120,7 @@ class POINT_CHARGE(Props):
         screen.blit(image, image.get_rect(center=self.position))
 
     def e_field(self, r):
-        return self.charge * (r - self.position) / (np.linalg.norm(r - self.position))
+        return self.charge * (r - self.position) / (np.linalg.norm(r - self.position))**3
 
     def b_field(self, r):
         if(not self.movable):
