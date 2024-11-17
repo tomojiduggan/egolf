@@ -5,12 +5,12 @@ from Global_Var import *
 from physics.props import *
 import numpy as np
 from runlevel import getLevel
-from map_design import free_design_screen
+from map_design import free_design_screen2
 # from game_design import draw_game
 
 from visualize import visualize_E
 from runlevel import getLevel
-from map_design import free_design_screen
+
 
 from load_images import *
 
@@ -201,9 +201,9 @@ render_B_simulation = False
 E_sim_layer = pygame.Surface((PLAYABLE_WIDTH, PLAYABLE_HEIGHT), pygame.SRCALPHA)
 B_sim_layer = pygame.Surface((PLAYABLE_WIDTH, PLAYABLE_HEIGHT), pygame.SRCALPHA)
 
-
+selected_charge = None
 def draw_game():
-    global render_E_simulation, render_B_simulation
+    global render_E_simulation, render_B_simulation, paused, selected_charge
 
     """Draw the game screen."""
     global paused  # Ensure `paused` is accessible
@@ -226,7 +226,7 @@ def draw_game():
     right_boundary.draw(screen)
 
     # Define button list
-    button_list = [restart_button, pause_button, place_button, swap_button, E_button, B_button,back_button]
+    button_list = [restart_button, pause_button,  swap_button, E_button, B_button,back_button]
 
     # Initialize game state
     current_tile = -1
@@ -242,13 +242,10 @@ def draw_game():
             elif current_tile == 1:  # Pause Button
                 paused = not paused
                 pause_game() if paused else print("Game Resumed")
-            elif current_tile == 2:  # Place Button
-                render_E_simulation = False
-                print("Placing charge...")
-            elif current_tile == 3:  # Swap Button
+            elif current_tile == 2:  # Swap Button
                 render_E_simulation = False
                 print("Swapping objects...")
-            elif current_tile == 4:  # Extra Action Button E
+            elif current_tile == 3:  # Extra Action Button E
                 print("Plotting the electric field")
                 # Turn on/off the electric field
                 render_E_simulation = not render_E_simulation

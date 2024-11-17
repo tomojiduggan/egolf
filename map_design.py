@@ -43,7 +43,7 @@ button_x = (SCREEN_WIDTH - button_width) // 2
 button_y = (SCREEN_HEIGHT - button_height) // 2
 
 # Game state
-game_state = "title"
+
 
 # Load background image
 background_image = pygame.image.load("pictures/screen_cov.webp")  # Replace with your file path
@@ -100,43 +100,74 @@ def back_to_title():
 
 global props_list 
 props_list = []
+
+
 # Create the free design screen
-def free_design_screen():
-    global game_state, props_list  # Declare globals at the start
-
+def free_design_screen2():
+    global game_state, props_list, is_dragging, run  # Declare globals at the start
     selected_prop = None
-    dragging = False
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Check if a prop is clicked
-            mouse_pos = pygame.mouse.get_pos()
-            for prop in reversed(props_list):  # Check topmost props first
-                if prop.rect.collidepoint(mouse_pos):
-                    selected_prop = prop
-                    dragging = True
-                    break
-        elif event.type == pygame.MOUSEBUTTONUP:
-            # Release the selected prop
-            if dragging:
-                dragging = False
-                selected_prop = None
+    def handle_event(prop, event):
+        """Handle mouse events for dragging."""
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if prop.rect.collidepoint(event.pos):  # Check if the mouse is over the prop
+                prop.is_dragging = True
+                prop.offset_x = prop.rect.x - event.pos[0]
+                prop.offset_y = prop.rect.y - event.pos[1]
+
+        elif event.type == pygame.MOUSEBUTTONUP:  
+                prop.is_dragging = False
+
         elif event.type == pygame.MOUSEMOTION:
-            # Drag the selected prop
-            if dragging and selected_prop:
-                selected_prop.set_position(pygame.mouse.get_pos())
+            if prop.is_dragging:  # Only drag the selected prop
+                prop.rect.x = event.pos[0] + prop.offset_x
+                prop.rect.y = event.pos[1] + prop.offset_y
+                prop.position = [prop.rect.x, prop.rect.y]  # Update position
 
     """Draw the free design screen."""
     screen.fill(WHITE)
 
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            for prop in props_list:
+                if prop.rect.collidepoint(event.pos):  # Check if the mouse is over a prop
+                    is_dragging = True
+                    selected_prop = prop
+                    offset_x = prop.rect.x - event.pos[0]
+                    offset_y = prop.rect.y - event.pos[1]
+                    break  # Stop checking other props once one is selected
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            is_dragging = False
+            selected_prop = None
+
+        elif event.type == pygame.MOUSEMOTION:
+            if is_dragging and selected_prop:  # Drag the selected prop
+                selected_prop.rect.x = event.pos[0] + offset_x
+                selected_prop.rect.y = event.pos[1] + offset_y
+                selected_prop.position = [selected_prop.rect.x, selected_prop.rect.y]  # Update position
+
     # Draw existing props
     for prop in props_list:
         prop.draw(screen)
-    
-    button_list = [add_wire_button, add_charge_button, add_solenoid_button, add_block_button, add_back_button, add_save_button]
+
+
+    # Draw existing props and handle events
+    # for prop in props_list:
+    #     prop.draw(screen)
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             run = False
+    #         handle_event(prop, event)
+
+    # Buttons for adding props
+    button_list = [
+        add_wire_button, add_charge_button, add_solenoid_button, 
+        add_block_button, add_back_button, add_save_button
+    ]
 
     # Initialize game state
     current_tile = -1
@@ -146,23 +177,25 @@ def free_design_screen():
         if button.draw(screen):  # Draw the button and check if clicked
             current_tile = button_count  # Update current selected tile if clicked 
             # Call the corresponding function based on the button clicked
-            if current_tile == 0:  # Restart Button
+            if current_tile == 0:  # Add Wire
                 wire = WIRE((100, 100), (150, 150), 2)
                 props_list.append(wire)
-            elif current_tile == 1:  # Pause Button
+            elif current_tile == 1:  # Add Charge
                 charge = POINT_CHARGE((200, 200), 1, False)
                 props_list.append(charge)
-            elif current_tile == 2:  # Place Button
-                solenoid = SOLENOID(50, 1, [0,0,1], [200,200])
+            elif current_tile == 2:  # Add Solenoid
+                solenoid = SOLENOID(50, 1, [200, 200])
                 props_list.append(solenoid)
-            elif current_tile == 3:  # Swap Button
+            elif current_tile == 3:  # Add Block
                 pass
-            elif current_tile == 4:  # Extra Action Button E
+            elif current_tile == 4:  # Back to Title
                 back_to_title()
-            elif current_tile == 5:  # Extra Action Button B
+            elif current_tile == 5:  # Save (currently no action)
                 pass
+
     # Highlight the selected button with a gray border
     if current_tile != -1:  
-        pygame.draw.rect(screen, GRAY, button_list[current_tile].rect,3)  # Add padding around the button
+        pygame.draw.rect(screen, GRAY, button_list[current_tile].rect, 3)  # Add padding around the button
+    
     # Update the display
     pygame.display.flip()
