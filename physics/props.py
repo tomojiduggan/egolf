@@ -25,6 +25,12 @@ class Props(object):
         on each update, for most prop do nothing
         """
         return
+    
+    def free(self):
+        global ALL_PROPS
+        if self in ALL_PROPS:
+            ALL_PROPS.remove(self)
+        del self
 
 class REGION(Props):
     """

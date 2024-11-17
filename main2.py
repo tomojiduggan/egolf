@@ -75,8 +75,8 @@ def back_to_title():
         
 def game_stop(): 
     n = len(ALL_PROPS)
-    for i in range(n):
-        ALL_PROPS.pop()
+    for prop in ALL_PROPS:
+        prop.free()
 
 def game_restart():
     game_stop()
@@ -134,6 +134,7 @@ def draw_start_page():
     global game_state  
     screen.fill(WHITE)
     if new_game.draw(screen):
+        game_stop()
         game_state = "game"
         game_level = "level1.json"
         getLevel(game_level)
