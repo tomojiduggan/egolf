@@ -251,11 +251,9 @@ def draw_game():
                 render_E_simulation = not render_E_simulation
                 E_sim_layer.fill((0, 0, 0, 0))
                 visualize_E(E_sim_layer)
-
-
             elif current_tile == 5:  # Extra Action Button B
                 render_E_simulation = False
-                print("Performing extra action B...")
+                back_to_title()
                 # extra_action_B()
             elif current_tile == 6: # Back button
                 render_E_simulation = False
