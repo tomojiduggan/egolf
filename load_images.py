@@ -14,6 +14,8 @@ game_img = pygame.image.load('pictures/game.jpg')
 new_game = button.Button(SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2, game_img, 0.06)
 free_design_image = pygame.image.load('pictures/map_design.jpg')
 free_design = button.Button(SCREEN_WIDTH // 2 + 50, SCREEN_HEIGHT // 2 , free_design_image, 0.06)
+start_background = pygame.image.load('pictures/start_cov.jpg')
+start_background = pygame.transform.scale(start_background, (SCREEN_WIDTH, SCREEN_HEIGHT))
 # load design page buttons
 add_wire_image = pygame.image.load('pictures/add_wire.png')
 add_wire_button = button.Button(50, SCREEN_HEIGHT - 100, add_wire_image, 0.04)
@@ -30,6 +32,9 @@ back_button = button.Button(650, SCREEN_HEIGHT - 100, add_back_image, 0.04)
 add_back_button = button.Button(550, SCREEN_HEIGHT - 100, add_back_image, 0.04)
 add_save_image = pygame.image.load('pictures/save.png')
 add_save_button = button.Button(650, SCREEN_HEIGHT - 100, add_save_image, 0.04)
+game_cover = pygame.image.load('pictures/game_background.jpg')
+game_cover_image = pygame.transform.scale(game_cover, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
 
 # load game play button images
 restart_img = pygame.image.load('pictures/restart_btn.png', ).convert_alpha()
