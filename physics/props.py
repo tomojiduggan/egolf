@@ -94,8 +94,10 @@ class WIRE(Props):
         self.current = current * I
         self.has_B = True
         self.has_B = True
+        self.rect = pygame.Rect(start[0], start[1], end[0]-start[0], end[1]-start[1])
 
     def b_field(self, r):
+        
         x1_r = r - self.start
         x2_r = r - self.end
         c1 = np.dot(x1_r, self.vec_l) / np.linalg.norm(x1_r)
