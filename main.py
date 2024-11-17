@@ -188,7 +188,7 @@ def draw_game():
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 
 
-# TESTING
+
 def startGame():
     player = PLAYER(np.array([40, 40]))
 
