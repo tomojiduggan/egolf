@@ -14,6 +14,9 @@ class Props(object):
         self.prop_id = len(ALL_PROPS)
         self.has_E = False
         self.has_B = False
+        self.is_dragging = False
+        self.offset_x = 0
+        self.offset_y = 0
         ALL_PROPS.append(self)
     
 
@@ -27,7 +30,7 @@ class REGION(Props):
     """
     Abstract class for rectangular region
     """
-    def __init__(self, tl, br, color=(255, 0, 0)):
+    def __init__(self, tl, br, color=(0, 204, 102)):
         super().__init__(np.array([(br[0]-tl[0])/2, (br[1]-tl[1])/2]), False)
         self.tl = tl
         self.br = br
@@ -89,7 +92,7 @@ class WIRE(Props):
 
     def draw(self, screen):
         pygame.draw.line(screen, "grey", self.start, self.end, width=5)
-        pygame.draw.circle(screen, "red", self.start, 10)
+        pygame.draw.circle(screen, (189, 64, 63), self.start, 10)
         pygame.draw.circle(screen, "blue", self.end, 10)
         return
 
@@ -110,17 +113,22 @@ class POINT_CHARGE(Props):
             self.image_path = "pictures/plus_charge.png"
         else:
             self.image_path = "pictures/minu_charge.png"
+        self.image = pygame.image.load(self.image_path)
+        self.image = pygame.transform.scale(self.image, (30, 30))
+        self.rect = self.image.get_rect(topleft=self.position)
         if(movable):
             self.has_B = True
 
     def draw(self, screen):
-        image = pygame.image.load(self.image_path)
-        # pygame.transform.scale_by(image, )
-        image = pygame.transform.scale(image, (30, 30))
-        screen.blit(image, image.get_rect(center=self.position))
+        screen.blit(self.image, self.image.get_rect(center=self.position))
 
+    def swap_sign(self):
+        self.charge *= -1
+        self.image_path = 'pictures/plus_charge.png' if self.charge > 0 else 'pictures/minu_charge.png'
+        self.image = pygame.image.load(self.image_path)
+        self.image = pygame.transform.scale(self.image, (30, 30))
     def e_field(self, r):
-        return self.charge * (r - self.position) / (np.linalg.norm(r - self.position))
+        return self.charge * (r - self.position) / (np.linalg.norm(r - self.position))**3
 
     def b_field(self, r):
         if(not self.movable):
