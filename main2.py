@@ -31,7 +31,7 @@ game_state = "title"
 background_image = pygame.image.load("pictures/screen_cov.webp")  # Replace with your file path
 background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))  # Resize to fit the screen
 start_button_image = pygame.image.load("pictures/start_btn.png")
-free_design_image = pygame.image.load("pictures/place_btn.PNG")
+free_design_image = pygame.image.load("pictures/place_btn.png")
 start_button = button.Button((SCREEN_WIDTH - start_button_image.get_width() * 0.5)// 2, SCREEN_HEIGHT-70, start_button_image, 0.5)
 start_game_image = pygame.image.load("pictures/start_btn.png")
 

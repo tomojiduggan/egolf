@@ -17,6 +17,7 @@ class Props(object):
         self.has_E = False
         self.has_B = False
         ALL_PROPS.append(self)
+    
 
 class REGION(Props):
     """
@@ -48,11 +49,13 @@ class WIRE(Props):
     def __init__(self, start, end, current):  # start and end are positions of the two ends of the wire
         self.position = (end - start) / 2
         self.movable = False
+        super().__init__((end - start) / 2, False)
         
         self.start = start
         self.end = end
         self.vec_l = end - start
         self.current = current
+        self.has_B = True
 
     def b_field(self, r):
         x1_r = r - self.start
@@ -68,6 +71,12 @@ class WIRE(Props):
             return -norm_b_phi
         else:
             return 0
+
+    def update(self):
+        return
+
+    def draw(self, screen):
+        return
 
     def current_swap(self):
         self.current *= -1
