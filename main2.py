@@ -155,8 +155,8 @@ def draw_start_page():
     screen.fill(WHITE)
     if new_game.draw(screen):
         game_state = "game"
-        # print("game start")
-        getLevel("level1.json")
+        game_level = "level1.json"
+        getLevel(game_level)
     if free_design.draw(screen):
         game_state = "free_design"
 

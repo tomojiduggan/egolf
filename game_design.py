@@ -4,6 +4,7 @@ import sys
 import Global_Var as Global_Var
 from physics.props import*
 import numpy as np
+from runlevel import getLevel
 
 pygame.init()
 # Screen dimensions
@@ -44,6 +45,7 @@ button_y = (SCREEN_HEIGHT - button_height) // 2
 
 # Game state
 game_state = "title"
+game_level = ""
 
 # Load background image
 background_image = pygame.image.load("pictures/screen_cov.webp")  # Replace with your file path
@@ -95,9 +97,17 @@ def back_to_title():
     global game_state
     print("Returning to title screen...")
     game_state = 'start_page'
+
+def restart():
+    ALL_PROPS = []
+    getLevel(game_level)
     
-
-
+# State where clicking will launch ball
+def run_launch(player):
+    mouse_pos = pygame.mouse.get_pos()
+    direction = np.array(mouse_pos) - player.position
+    if pygame.mouse.get_pressed()[0] == 1:
+        player.velocity = LAUNCH_SPEED * direction / np.linalg.norm(direction)
 
 def draw_game():
     """Draw the game screen."""
@@ -132,6 +142,7 @@ def draw_game():
             # Call the corresponding function based on the button clicked
             if current_tile == 0:  # Restart Button
                 print("Restarting the game...")
+                restart()
             elif current_tile == 1:  # Pause Button
                 paused = not paused
                 pause_game() if paused else print("Game Resumed")
@@ -155,8 +166,8 @@ def draw_game():
         if(isinstance(object, PLAYER)):
             player = object
     player.handle_collisions()
-
-
+    if(max(player.velocity) == 0):
+        run_launch(player) # draw arrow, make it so clicking within the screen will launch the player
 
     # Update the display
     pygame.display.flip()
