@@ -50,6 +50,8 @@ class Props(object):
 
                 if(isinstance(self, POINT_CHARGE)):
                     self.position = np.array([self.rect.x + 15, self.rect.y + 15])
+                elif(isinstance(self, SOLENOID)):
+                    self.position = np.array([self.rect.x + 30, self.rect.y + 30])
                 else:
                     self.position = np.array([self.rect.x, self.rect.y])
 
@@ -245,7 +247,6 @@ class PLAYER(POINT_CHARGE):
             elif isinstance(p, WIN):
                 if p.rect.colliderect(self.rect):
                     print("You Win")
-                    # TODO: Implement winning screen
                     return 'win'
 
 
@@ -270,7 +271,7 @@ class SOLENOID(Props):
         self.image_path = 'pictures/solenoid.png'
         self.image = pygame.image.load(self.image_path)
         self.image = pygame.transform.scale(self.image, (60, 60))
-        self.rect = self.image.get_rect(topleft=self.position-np.array([50,50]))
+        self.rect = self.image.get_rect(topleft=self.position-np.array([30,30]))
         self.movable = True
         self.has_B = True
 

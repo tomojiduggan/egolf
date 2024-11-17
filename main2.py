@@ -155,6 +155,16 @@ def free_design_screen():
     global game_state, props_list, player_add
     screen.fill(WHITE)
 
+    top_boundary = WALL(np.array([0, 0]), np.array([800, 13]))
+    left_boundary = WALL(np.array([0, 0]), np.array([13, 486]))
+    bot_boundary = WALL(np.array([0, 484]), np.array([800, 497]))
+    right_boundary = WALL(np.array([787, 0]), np.array([800, 486]))
+
+    top_boundary.draw(screen)
+    left_boundary.draw(screen)
+    bot_boundary.draw(screen)
+    right_boundary.draw(screen)
+
     # Draw existing props
     for prop in props_list:
         prop.draw(screen)
@@ -193,15 +203,15 @@ def free_design_screen():
                 }
                 for p in props_list:
                     if p.prop_id == -1:
-                        data["player"] = list(p.position)
+                        data["player"] = p.position.tolist()  # Use .tolist() for numpy arrays
                     elif isinstance(p, POINT_CHARGE):
-                        data["charges"].append([list(p.position), p.charge, False])
+                        data["charges"].append([p.position.tolist(), p.charge, False])  # Use .tolist()
                     elif isinstance(p, WIRE):
-                        data['wires'].append([list(p.start), list(p.end), p.current])
+                        data["wires"].append([p.start.tolist(), p.end.tolist(), p.current])  # Use .tolist()
                     elif isinstance(p, WIN):
-                        data['win'].append([list(p.tl), list(p.br)])
+                        data["win"].append([p.tl.tolist(), p.br.tolist()])  # Use .tolist()
                     elif isinstance(p, SOLENOID):
-                        data['solenoids'].append([list(p.position), p.current])
+                        data["solenoids"].append([p.position.tolist(), p.current])  # Use .tolist()
                 # Serialize to JSON
                 json_output = json.dumps(data, indent=4)
 
