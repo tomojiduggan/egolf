@@ -226,7 +226,7 @@ def draw_game():
     right_boundary.draw(screen)
 
     # Define button list
-    button_list = [restart_button, pause_button,  swap_button, E_button, B_button,back_button]
+    button_list = [restart_button, pause_button, swap_button, E_button, B_button,back_button]
 
     # Initialize game state
     current_tile = -1
@@ -244,6 +244,8 @@ def draw_game():
                 pause_game() if paused else print("Game Resumed")
             elif current_tile == 2:  # Swap Button
                 render_E_simulation = False
+                if selected_charge:
+                     selected_charge.swap_sign()
                 print("Swapping objects...")
             elif current_tile == 3:  # Extra Action Button E
                 print("Plotting the electric field")
@@ -251,11 +253,9 @@ def draw_game():
                 render_E_simulation = not render_E_simulation
                 E_sim_layer.fill((0, 0, 0, 0))
                 visualize_E(E_sim_layer)
-            elif current_tile == 5:  # Extra Action Button B
+            elif current_tile == 4:  # Extra Action Button B
                 render_E_simulation = False
-                back_to_title()
-                # extra_action_B()
-            elif current_tile == 6: # Back button
+            elif current_tile == 5: # Back button
                 render_E_simulation = False
                 game_stop()
                 global game_state
@@ -265,6 +265,12 @@ def draw_game():
     if current_tile != -1:  # Only highlight if a button is selected
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect, 3)
 
+    if selected_charge:
+        selected_charge.draw(screen)
+    # Highlight the selected charge
+    if selected_charge:
+        pygame.draw.rect(screen, GRAY, selected_charge.rect.inflate(4, 4), 3)
+    
     for object in ALL_PROPS:
         if(not paused):
             object.update()
@@ -282,6 +288,21 @@ def draw_game():
     pygame.display.flip()
 
 
+def handle_event(object, event):
+    global selected_charge
+    if (isinstance(object, POINT_CHARGE)):
+    # print(selected_charge)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if object.rect.collidepoint(event.pos) and selected_charge == None:
+                selected_charge = object
+            elif object.rect.collidepoint(event.pos):
+                 selected_charge == object
+                 selected_charge = None
+            # if swap_button.draw(screen) and selected_charge:
+            #     pass
+            # else:
+            #     selected_charge = None
+
 def draw_B_sim_layer():
     #TODO
     pass
@@ -292,6 +313,10 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if game_state == "game":
+            for object in ALL_PROPS:
+                handle_event(object,event)
+        
 
     # Update screen based on the current state
     if game_state == "title":
