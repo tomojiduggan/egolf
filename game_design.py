@@ -2,11 +2,8 @@ import pygame
 import button
 import sys
 import Global_Var as Global_Var
-from physics.props import *
+from physics.props import*
 import numpy as np
-from runlevel import getLevel
-from map_design import free_design_screen
-from game_design import draw_game
 
 pygame.init()
 # Screen dimensions
@@ -52,7 +49,6 @@ game_state = "title"
 background_image = pygame.image.load("pictures/screen_cov.webp")  # Replace with your file path
 background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))  # Resize to fit the screen
 start_button_image = pygame.image.load("pictures/start_btn.png")
-free_design_image = pygame.image.load("pictures/place_btn.png")
 start_button = button.Button((SCREEN_WIDTH - start_button_image.get_width() * 0.5)// 2, SCREEN_HEIGHT-70, start_button_image, 0.5)
 start_game_image = pygame.image.load("pictures/start_btn.png")
 # load start page buttons
@@ -91,7 +87,6 @@ B_button = button.Button(550, SCREEN_HEIGHT - 100, B_img, 0.3)
 run = True
 paused = False
 
-# Button functions
 def pause_game():
     print("Pausing the game...")
     # Add code here to pause the game, e.g., freeze the game loop or display a pause screen.
@@ -101,108 +96,9 @@ def back_to_title():
     print("Returning to title screen...")
     game_state = 'start_page'
     
-    
-# Game pages
-#create empty tile list
-world_data = []
-for row in range(ROWS):
-	r = [-1] * MAX_COLS
-	world_data.append(r)
-
-#create ground
-for tile in range(0, MAX_COLS):
-	world_data[ROWS - 1][tile] = 0
-
-
-#function for outputting text onto the screen
-def draw_text(text, font, text_col, x, y):
-	img = font.render(text, True, text_col)
-	screen.blit(img, (x, y))
-
-#create function for drawing background
-
-
-#draw grid
-def draw_grid():
-	#vertical lines
-	for c in range(MAX_COLS + 1):
-		pygame.draw.line(screen, WHITE, (c * TILE_SIZE , 0), (c * TILE_SIZE, SCREEN_HEIGHT))
-	#horizontal lines
-	for c in range(ROWS + 1):
-		pygame.draw.line(screen, WHITE, (0, c * TILE_SIZE), (SCREEN_WIDTH, c * TILE_SIZE))
-
-
-#function for drawing the world tiles
-def draw_world():
-	for y, row in enumerate(world_data):
-		for x, tile in enumerate(row):
-			if tile >= 0:
-				screen.blit(img_list[tile], (x * TILE_SIZE, y * TILE_SIZE))
 
 
 
-
-def draw_title_screen():
-    """Draw the title screen with a Start button."""
-    global game_state 
-    screen.blit(background_image, (0, 0))  # Draw the background
-    if start_button.draw(screen):  # If the button is clicked
-        game_state = 'start_page'
-
-def draw_start_page():
-    """Draw the start page."""
-    global game_state  
-    screen.fill(WHITE)
-    if new_game.draw(screen):
-        game_state = "game"
-        # print("game start")
-        getLevel("level1.json")
-    if free_design.draw(screen):
-        game_state = "free_design"
-
-
-props_list = []
-# Create the free design screen
-def free_design_screen():
-    """Draw the free design screen."""
-    global game_state, props_list
-    screen.fill(WHITE)
-
-    # Draw existing props
-    for prop in props_list:
-        prop.draw(screen)
-    
-    button_list = [add_wire_button, add_charge_button, add_solenoid_button, add_block_button, add_back_button, add_save_button]
-
-    # Initialize game state
-    current_tile = -1
-
-    # Draw buttons and check interactions
-    for button_count, button in enumerate(button_list):
-        if button.draw(screen):  # Draw the button and check if clicked
-            current_tile = button_count  # Update current selected tile if clicked 
-            # Call the corresponding function based on the button clicked
-            if current_tile == 0:  # Restart Button
-                wire = WIRE((100, 100), (150, 150), 2)
-                props_list.append(wire)
-            elif current_tile == 1:  # Pause Button
-                charge = POINT_CHARGE((200, 200), 1, False)
-                props_list.append(charge)
-            elif current_tile == 2:  # Place Button
-                solenoid = SOLENOID(50, 1, [0,0,1], [200,200])
-                props_list.append(solenoid)
-            elif current_tile == 3:  # Swap Button
-                pass
-            elif current_tile == 4:  # Extra Action Button E
-                back_to_title()
-            elif current_tile == 5:  # Extra Action Button B
-                pass
-    # Highlight the selected button with a gray border
-    if current_tile != -1:  
-        pygame.draw.rect(screen, GRAY, button_list[current_tile].rect,3)  # Add padding around the button
-    # Update the display
-    pygame.display.flip()
-    
 def draw_game():
     """Draw the game screen."""
     global paused  # Ensure `paused` is accessible
@@ -252,40 +148,9 @@ def draw_game():
     # Highlight the selected tile with a gray border
     if current_tile != -1:  # Only highlight if a button is selected
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect, 3)
-    
-    # PHYSICS PART, DRAW OBJECTS
-    for object in ALL_PROPS:
-        object.update()
-        object.draw(screen)
-        if(isinstance(object, PLAYER)):
-            player = object
-    player.handle_collisions()
+
+
+
 
     # Update the display
     pygame.display.flip()
-
-
-
-# Main loop
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-    # Update screen based on the current state
-    if game_state == "title":
-        draw_title_screen()
-    elif game_state == "start_page":
-        draw_start_page()
-    elif game_state == "game":
-        draw_game()
-    elif game_state == "free_design":
-        free_design_screen()
-
-    # Update the display
-    pygame.display.flip()
-
-# Quit Pygame
-pygame.quit()
-sys.exit()
