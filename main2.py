@@ -38,7 +38,7 @@ start_button_image = pygame.image.load("pictures/start_btn.png")
 free_design_image = pygame.image.load("pictures/place_btn.PNG")
 start_button = button.Button((SCREEN_WIDTH - start_button_image.get_width() * 0.5)// 2, SCREEN_HEIGHT-70, start_button_image, 0.5)
 start_game_image = pygame.image.load("pictures/start_btn.png")
-
+# load design page buttons
 add_wire_image = pygame.image.load('pictures/add_wire.png')
 add_wire_button = button.Button(50, SCREEN_HEIGHT - 100, add_wire_image, 0.04)
 add_charge_image = pygame.image.load('pictures/add_charge.png')
@@ -48,18 +48,23 @@ add_solenoid_button = button.Button(250, SCREEN_HEIGHT - 100, add_solenoid_image
 add_block_image = pygame.image.load('pictures/add_block.png')
 add_block_button = button.Button(350, SCREEN_HEIGHT - 100, add_block_image, 0.04)
 add_back_image = pygame.image.load('pictures/back.png')
+back_button = button.Button(650, SCREEN_HEIGHT - 100, add_back_image, 0.04)
 add_back_button = button.Button(450, SCREEN_HEIGHT - 100, add_back_image, 0.04)
 add_save_image = pygame.image.load('pictures/save.png')
 add_save_button = button.Button(550, SCREEN_HEIGHT - 100, add_save_image, 0.04)
-
-# Load game play button images
+# load game play button images
 restart_img = pygame.image.load('pictures/restart_btn.png', ).convert_alpha()
+restart_button = button.Button(50, SCREEN_HEIGHT - 100, restart_img, 0.3)
 pause_img = pygame.image.load('pictures/pause_btn.png').convert_alpha()
+pause_button = button.Button(150, SCREEN_HEIGHT - 100, pause_img, 0.3)
 place_img = pygame.image.load('pictures/place_btn.png').convert_alpha()
+place_button = button.Button(250, SCREEN_HEIGHT - 100, place_img, 0.3)
 swap_img = pygame.image.load('pictures/swap_btn.png').convert_alpha()
+swap_button = button.Button(350, SCREEN_HEIGHT - 100, swap_img, 0.3)
 E_img = pygame.image.load('pictures/E_btn.png').convert_alpha()
+E_button = button.Button(450, SCREEN_HEIGHT - 100, E_img, 0.3)
 B_img = pygame.image.load('pictures/B_btn.png').convert_alpha()
-
+B_button = button.Button(550, SCREEN_HEIGHT - 100, B_img, 0.3)
 
 run = True
 paused = False
@@ -88,6 +93,10 @@ def extra_action_E():
 def extra_action_B():
     print("Performing extra action B...")
     # Add code for whatever action the "B" button triggers.
+def back_to_title():
+    global game_state
+    print("Returning to title screen...")
+    game_state = 'start_page'
 
 def draw_title_screen():
     """Draw the title screen with a Start button."""
@@ -141,6 +150,8 @@ def free_design():
 def handle_event(event):
     """Handle events for adding and dragging props."""
     global props_list
+    if add_back_button.draw(screen):
+        back_to_title()
 
     if event.type == pygame.MOUSEBUTTONDOWN:
         # Check if any button is clicked to create a prop
@@ -176,34 +187,21 @@ def handle_event(event):
 
 def draw_game():
     """Draw the game screen."""
+    global paused  # Ensure `paused` is accessible
+    
+    # Clear the screen
     screen.fill(WHITE)
-    game_text = font.render("Game Screen", True, BLACK)
-    game_rect = game_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-    screen.blit(game_text, game_rect)
-
-    img_list = [restart_img, pause_img, place_img, swap_img, E_img, B_img]
-    button_list = []
-    button_col = 0
-    button_row = 0
-
-    # Position buttons
-    for i in range(len(img_list)):
-        tile_button = button.Button(75 * button_col + 50, 75 * button_row + 50, img_list[i], 0.3)
-        button_list.append(tile_button)
-        button_col += 1
-        if button_col == 3:
-            button_row += 1
-            button_col = 0
+    
+    # Define button list
+    button_list = [restart_button, pause_button, place_button, swap_button, E_button, B_button,back_button]
 
     # Initialize game state
     current_tile = -1
 
-    # Draw buttons
-    for button_count, i in enumerate(button_list):
-        if i.draw(screen):
-            global paused
-            current_tile = button_count  # Update current selected tile if clicked
-
+    # Draw buttons and check interactions
+    for button_count, button in enumerate(button_list):
+        if button.draw(screen):  # Draw the button and check if clicked
+            current_tile = button_count  # Update current selected tile if clicked 
             # Call the corresponding function based on the button clicked
             if current_tile == 0:  # Restart Button
                 restart_game()
@@ -218,14 +216,14 @@ def draw_game():
                 extra_action_E()
             elif current_tile == 5:  # Extra Action Button B
                 extra_action_B()
+            elif current_tile == 6: 
+                back_to_title() # Back Button
+    # Highlight the selected button with a gray border
 
-    # Highlight the selected tile with a gray border
-    if current_tile != -1:  # Only highlight if a button is selected
-        pygame.draw.rect(screen, GRAY, button_list[current_tile].rect, 3)
-
+    if current_tile != -1:  
+        pygame.draw.rect(screen, GRAY, button_list[current_tile].rect,3)  # Add padding around the button
     # Update the display
     pygame.display.flip()
-
 
 
 
