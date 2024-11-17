@@ -60,7 +60,9 @@ button_y = (SCREEN_HEIGHT - button_height) // 2
 # Game state
 game_state = "title"
 game_level = 0
-game_levels = ["level1.json", "level2.json", "level3.json"]
+# game_levels = ["level1.json", "level2.json", "level3.json"]
+game_levels = [f"level{i}.json" for i in range(1, 5+1)]
+print(game_levels)
 
 
 run = True
