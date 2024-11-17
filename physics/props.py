@@ -89,7 +89,7 @@ class WIRE(Props):
 
     def draw(self, screen):
         pygame.draw.line(screen, "grey", self.start, self.end, width=5)
-        pygame.draw.circle(screen, "red", self.start, 10)
+        pygame.draw.circle(screen, (189, 64, 63), self.start, 10)
         pygame.draw.circle(screen, "blue", self.end, 10)
         return
 
