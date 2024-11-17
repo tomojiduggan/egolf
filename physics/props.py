@@ -89,8 +89,8 @@ class WIN(REGION):
 class WIRE(Props):
     def __init__(self, start, end, current):  # start and end are positions of the two ends of the wire
         self.position = (end - start) / 2
-        self.movable = False
-        super().__init__((end - start) / 2, False)
+        self.movable = True
+        super().__init__((end - start) / 2, True)
         
         self.start = start
         self.end = end
@@ -98,7 +98,10 @@ class WIRE(Props):
         self.current = current * I
         self.has_B = True
         self.has_B = True
-        self.rect = pygame.Rect(start[0], start[1], end[0]-start[0], end[1]-start[1])
+        top_left = (min(start[0], end[0]), min(start[1], end[1]))
+        width = abs(end[0] - start[0])  # Calculate width
+        height = abs(end[1] - start[1])  # Calculate height
+        self.rect = pygame.Rect(top_left[0], top_left[1], width, height)
 
     def b_field(self, r):
         
@@ -260,19 +263,20 @@ class PLAYER(POINT_CHARGE):
 class SOLENOID(Props):
     # Removed num_loops (same as putting current * n)
     # Removed direction (Say +I is counterclockwise, say -I is clockwise)
-    def __init__(self, current, position):
+    def __init__(self, current, position,movable=True):
+        super().__init__(position, movable)
         self.current = current
         self.position = position 
         self.image_path = 'pictures/solenoid.png'
         self.image = pygame.image.load(self.image_path)
-        self.image = pygame.transform.scale(self.image, (50, 50))
-        self.rect = self.image.get_rect(topleft=self.position)
+        self.image = pygame.transform.scale(self.image, (60, 60))
+        self.rect = self.image.get_rect(topleft=self.position-np.array([50,50]))
         self.movable = True
         self.has_B = True
 
     def draw(self, screen):
+        
         screen.blit(self.image, self.image.get_rect(center=self.position))
-
 
     def b_field(self, point):
         """
@@ -282,8 +286,7 @@ class SOLENOID(Props):
         :return: Magnetic field vector as a numpy array [Bx, By, Bz].
         """
         # mu_0 = 4 * np.pi * 1e-7  # Magnetic constant (T·m/A)
-        mu_0 = 1e-3
-        n = 1 / self.length  # Turns per unit length
+        mu_0 = 1e-3 # Turns per unit length
 
         # Convert point to a numpy array and find relative position
         point = np.array(point)
