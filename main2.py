@@ -8,6 +8,8 @@ from runlevel import getLevel
 from map_design import free_design_screen2
 # from game_design import draw_game
 
+import json
+
 from visualize import visualize_E, visualize_B
 from runlevel import getLevel
 
@@ -192,7 +194,36 @@ def free_design_screen():
             elif current_tile == 4:  # Back to Title
                 back_to_title()
             elif current_tile == 5:  # Save (currently no action)
-                pass
+                data= {
+                    "player": None,
+                    "charges": [],
+                    "wires": [],
+                    "walls": [],
+                    "win": [],
+                    "solenoids": []
+                }
+                for p in props_list:
+                    if p.prop_id == -1:
+                        data["player"] = list(p.position)
+                    elif isinstance(p, POINT_CHARGE):
+                        data["charges"].append([list(p.position), p.charge, False])
+                    elif isinstance(p, WIRE):
+                        data['wires'].append([list(p.start), list(p.end), p.current])
+                    elif isinstance(p, WIN):
+                        data['win'].append([list(p.tl), list(p.br)])
+                    elif isinstance(p, SOLENOID):
+                        data['solenoids'].append([list(p.position), p.current])
+                # Serialize to JSON
+                json_output = json.dumps(data, indent=4)
+
+
+                # Save to a file
+                with open("custom_level.json", "w") as file:
+                    file.write(json_output)
+
+                # Output to console
+                print(json_output)
+
     # Highlight the selected button with a gray border
     if current_tile != -1:  
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect,3)  # Add padding around the button
