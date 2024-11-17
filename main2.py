@@ -133,7 +133,8 @@ def draw_title_screen():
 
 def draw_start_page():
     """Draw the start page."""
-    global game_state  
+    global game_state, game_level
+    game_level = 0
     screen.fill(WHITE)
     if new_game.draw(screen):
         game_stop()
@@ -216,10 +217,14 @@ def draw_lose_page():
     render_E_simulation = False
     global render_B_simulation
     render_B_simulation = False
-    screen.fill(WHITE)
-    lose_text = font.render("LOSE", True, RED)
-    text_rect = lose_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-    screen.blit(lose_text, text_rect)  # Draw the text on the screen
+    screen.blit(lose_img, (0,0))
+    if retry_btn.draw(screen): 
+         game_state = 'game'
+         game_restart()
+    # screen.fill(WHITE)
+    # lose_text = font.render("LOSE", True, RED)
+    # text_rect = lose_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+    # screen.blit(lose_text, text_rect)  # Draw the text on the screen
     pygame.display.flip()  # Update the display
 
 # State where clicking will launch ball
