@@ -196,56 +196,7 @@ def free_design_screen():
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect,3)  # Add padding around the button
     # Update the display
     pygame.display.flip()
-
-
-    # Handle events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            handle_event(event)
-
-def handle_event(event):
-    """Handle events for adding and dragging props."""
-    global props_list
-    if add_back_button.draw(screen):
-        back_to_title()
-
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        # Check if any button is clicked to create a prop
-        if add_wire_button.rect.collidepoint(event.pos):
-            new_wire = WIRE(np.array([100, 100]), np.array([200, 200]), 5)  # Example start and end positions
-            props_list.append(new_wire)
-        elif add_charge_button.rect.collidepoint(event.pos):
-            new_charge = POINT_CHARGE(np.array([300, 300]), 1e-6, True)  # Example position and charge
-            props_list.append(new_charge)
-        elif add_solenoid_button.rect.collidepoint(event.pos):
-            new_solenoid = SOLENOID(10, 1, [0, 0, 1], [500, 500])
-            props_list.append(new_solenoid)
-        elif add_block_button.rect.collidepoint(event.pos):
-            # Create a block (if needed, you can create a simple rectangle object or other)
-            pass  # Block creation code goes here
-
-        # Check if any prop is being clicked for dragging
-        for prop in props_list:
-            if isinstance(prop, SOLENOID) and prop.rect.collidepoint(event.pos):
-                prop.handle_event(event)  # Start dragging
-
-    elif event.type == pygame.MOUSEBUTTONUP:
-        # Stop dragging
-        for prop in props_list:
-            if isinstance(prop, SOLENOID):
-                prop.handle_event(event)
-
-    elif event.type == pygame.MOUSEMOTION:
-        # Update position if dragging
-        for prop in props_list:
-            if isinstance(prop, SOLENOID):
-                prop.handle_event(event)
-
-
-
+    
 def draw_game():
     """Draw the game screen."""
     global paused  # Ensure `paused` is accessible

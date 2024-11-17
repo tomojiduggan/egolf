@@ -182,18 +182,18 @@ class SOLENOID(Props):
         self.current = current
         self.direction = np.array(direction) / np.linalg.norm(direction)  # Normalize the direction vector
         self.position = list(position)  # Convert to list for mutability
-        self.image = pygame.image.load('pictures/solenoid.png')
-        self.rect = self.image.get_rect(topleft=self.position)
-        self.length = self.rect.width  # Assuming the solenoid is a rectangle
+        self.image_path = 'pictures/solenoid.png'
         self.movable = True
         self.is_dragging = False
-
         self.has_B = True
 
     def draw(self, screen):
-        """Draw the solenoid on the screen."""
-        screen.blit(self.image, self.rect)
-
+        image = pygame.image.load(self.image_path)
+        # pygame.transform.scale_by(image, )
+        image = pygame.transform.scale(image, (30, 30))
+        self.rect =image.get_rect(topleft=self.position)
+        self.length = self.rect.width
+        screen.blit(image, image.get_rect(center=self.position))
     def handle_event(self, event):
         """Handle mouse events for dragging."""
         if event.type == pygame.MOUSEBUTTONDOWN:
