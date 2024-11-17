@@ -183,9 +183,10 @@ def free_design_screen():
             elif current_tile == 5: # Save (currently no action)
                 pass
             elif current_tile == 6: # Add Player
-                player_add = True
-                player = PLAYER(np.array([200, 200]))
-                props_list.append(player)
+                if not player_add:
+                    player_add = True
+                    player = PLAYER(np.array([200, 200]))
+                    props_list.append(player)
     # Highlight the selected button with a gray border
     if current_tile != -1:  
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect,3)  # Add padding around the button
