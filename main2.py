@@ -104,6 +104,7 @@ B_button = button.Button(550, SCREEN_HEIGHT - 100, B_img, 0.3)
 
 run = True
 paused = False
+render_E_simulation = False
 
 # Button functions
 def pause_game():
@@ -234,10 +235,10 @@ def run_launch(player):
     if pygame.mouse.get_pressed()[0] == 1 and norm < 100:
         player.velocity = LAUNCH_SPEED * direction / np.linalg.norm(direction)
 
-
 def draw_game():
     """Draw the game screen."""
     global paused  # Ensure `paused` is accessible
+    global render_E_simulation
 
     # Clear the screen
     screen.fill(WHITE)
@@ -292,19 +293,22 @@ def draw_game():
                 global game_state
                 game_state = "start_page"
                 return
-
     # Highlight the selected tile with a gray border
     if current_tile != -1:  # Only highlight if a button is selected
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect, 3)
 
     for object in ALL_PROPS:
-        object.update()
+        if not paused:
+            object.update()
+            
         object.draw(screen)
         if(isinstance(object, PLAYER)):
             player = object
-    player.handle_collisions()
-    if(max(player.velocity) == 0):
-        run_launch(player) # draw arrow, make it so clicking within the screen will launch the player
+
+    if not paused:
+        player.handle_collisions()
+        if(max(player.velocity) == 0):
+            run_launch(player) # draw arrow, make it so clicking within the screen will launch the player
 
     # Update the display
     pygame.display.flip()
