@@ -11,10 +11,10 @@ start_button = button.Button((SCREEN_WIDTH - start_button_image.get_width() * 0.
 start_game_image = pygame.image.load("pictures/start_btn.png")
 # load start page buttons
 game_img = pygame.image.load('pictures/game.jpg')
-new_game = button.Button(SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2, game_img, 0.06)
+new_game = button.Button(SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2+120, game_img, 0.06)
 free_design_image = pygame.image.load('pictures/map_design.jpg')
-free_design = button.Button(SCREEN_WIDTH // 2 + 50, SCREEN_HEIGHT // 2 , free_design_image, 0.06)
-start_background = pygame.image.load('pictures/start_cov.jpg')
+free_design = button.Button(SCREEN_WIDTH // 2 + 50, SCREEN_HEIGHT // 2+120, free_design_image, 0.06)
+start_background = pygame.image.load('pictures/start_cov.png')
 start_background = pygame.transform.scale(start_background, (SCREEN_WIDTH, SCREEN_HEIGHT))
 # load design page buttons
 add_wire_image = pygame.image.load('pictures/add_wire.png')
