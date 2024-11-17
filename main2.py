@@ -1,6 +1,7 @@
 import pygame
 import button
 import sys
+import numpy as np
 import Global_Var as Global_Var
 from physics.props import WIRE, POINT_CHARGE, SOLENOID
 import numpy as np
@@ -11,14 +12,38 @@ SCREEN_WIDTH = Global_Var.SCREEN_WIDTH
 SCREEN_HEIGHT = Global_Var.SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Electromagnetic Golf")
+
+
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
 BLUE = (0, 0, 255)
-# Fonts
-font = pygame.font.Font(None, 74)
-button_font = pygame.font.Font(None, 20)
+
+ROWS = 15
+MAX_COLS = 150
+TILE_SIZE = SCREEN_HEIGHT // ROWS
+TILE_TYPES = 21
+level = 0
+current_tile = 0
+#create empty tile list
+world_data = []
+for row in range(ROWS):
+	r = [-1] * MAX_COLS
+	world_data.append(r)
+
+#create ground
+for tile in range(0, MAX_COLS):
+	world_data[ROWS - 1][tile] = 0
+
+
+#function for outputting text onto the screen
+def draw_text(text, font, text_col, x, y):
+	img = font.render(text, True, text_col)
+	screen.blit(img, (x, y))
+
+
+
 
 # Button dimensions
 button_width, button_height = 100, 50
@@ -140,7 +165,14 @@ def free_design_screen():
     add_block_button.draw(screen)
     add_back_button.draw(screen)
     add_save_button.draw(screen)
-
+    
+    if add_save_button.draw(screen):
+		#save level data
+        with open(f'level{level}_data.csv', 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter = ',')
+            for row in world_data:
+                writer.writerow(row)
+    
     # Handle events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
