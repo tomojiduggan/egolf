@@ -35,9 +35,13 @@ props_list = []  # List to store created props
 background_image = pygame.image.load("pictures/screen_cov.webp")  # Replace with your file path
 background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))  # Resize to fit the screen
 start_button_image = pygame.image.load("pictures/start_btn.png")
-free_design_image = pygame.image.load("pictures/place_btn.PNG")
 start_button = button.Button((SCREEN_WIDTH - start_button_image.get_width() * 0.5)// 2, SCREEN_HEIGHT-70, start_button_image, 0.5)
 start_game_image = pygame.image.load("pictures/start_btn.png")
+# load start page buttons
+game_img = pygame.image.load('pictures/game.jpg')
+new_game = button.Button(SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2, game_img, 0.06)
+free_design_image = pygame.image.load('pictures/map_design.jpg')
+free_design = button.Button(SCREEN_WIDTH // 2 + 50, SCREEN_HEIGHT // 2 , free_design_image, 0.06)
 # load design page buttons
 add_wire_image = pygame.image.load('pictures/add_wire.png')
 add_wire_button = button.Button(50, SCREEN_HEIGHT - 100, add_wire_image, 0.04)
@@ -109,15 +113,13 @@ def draw_start_page():
     """Draw the start page."""
     global game_state  
     screen.fill(WHITE)
-    new_game = button.Button(SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2, start_game_image, 0.5)
-    free_design = button.Button(SCREEN_WIDTH // 2 + 50, SCREEN_HEIGHT // 2 , free_design_image, 0.5)
     if new_game.draw(screen):
         game_state = "game"
     if free_design.draw(screen):
         game_state = "free_design"
 
 # Create the free design screen
-def free_design():
+def free_design_screen():
     """Draw the free design screen."""
     global game_state, props_list
     screen.fill(WHITE)
@@ -242,7 +244,7 @@ while running:
     elif game_state == "game":
         draw_game()
     elif game_state == "free_design":
-        free_design()
+        free_design_screen()
 
     # Update the display
     pygame.display.flip()
