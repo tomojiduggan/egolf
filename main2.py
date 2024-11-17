@@ -10,7 +10,7 @@ from map_design import free_design_screen2
 
 from visualize import visualize_E, visualize_B
 from runlevel import getLevel
-
+import time
 
 from load_images import *
 
@@ -76,12 +76,15 @@ def back_to_title():
     game_state = 'start_page'
         
 def game_stop(): 
-    n = len(ALL_PROPS)
-    for prop in ALL_PROPS:
+    # global ALL_PROPS
+    n = ALL_PROPS
+    for prop in n:
         prop.free()
 
 def game_restart():
     game_stop()
+    time.sleep(0.1)
+    print(game_level)
     getLevel(game_levels[game_level])
 
 # Game pages
@@ -192,7 +195,6 @@ def draw_win_page():
     global game_level
     my_img = pygame.transform.scale_by(win_img, 0.75)
     screen.blit(my_img, ((SCREEN_WIDTH - my_img.get_width()) / 2, (SCREEN_HEIGHT - my_img.get_height()) / 2))
-    print(pygame.mouse.get_pos())
     mouse_x, mouse_y = pygame.mouse.get_pos()
     if(pygame.mouse.get_pressed()[0] == 1):
         if(mouse_x > 158 and mouse_x < 354 and mouse_y > 371 and mouse_y < 456):
@@ -205,6 +207,7 @@ def draw_win_page():
                 # next nevel
                 game_level += 1
                 game_state = "game"
+
                 game_restart()
 
 
@@ -217,10 +220,16 @@ def draw_lose_page():
     render_E_simulation = False
     global render_B_simulation
     render_B_simulation = False
-    screen.blit(lose_img, (0,0))
-    if retry_btn.draw(screen): 
-         game_state = 'game'
-         game_restart()
+
+    my_img = pygame.transform.scale_by(lose_img, 0.75)
+    screen.blit(my_img, ((SCREEN_WIDTH - my_img.get_width()) / 2, (SCREEN_HEIGHT - my_img.get_height()) / 2))
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+    if(pygame.mouse.get_pressed()[0] == 1):
+        if(mouse_x > 302 and mouse_x < 496 and mouse_y > 381 and mouse_y < 465):
+            render_E_simulation = False
+            render_B_simulation = False
+            game_state="game"
+            game_restart()
     # screen.fill(WHITE)
     # lose_text = font.render("LOSE", True, RED)
     # text_rect = lose_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
