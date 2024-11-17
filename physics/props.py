@@ -47,7 +47,11 @@ class Props(object):
             if self.is_dragging:
                 self.rect.x = event.pos[0] + self.offset_x
                 self.rect.y = event.pos[1] + self.offset_y
-                self.position = [self.rect.x, self.rect.y]
+
+                if(isinstance(self, POINT_CHARGE)):
+                    self.position = np.array([self.rect.x + 15, self.rect.y + 15])
+                else:
+                    self.position = np.array([self.rect.x, self.rect.y])
 
 class REGION(Props):
     """
@@ -140,7 +144,7 @@ class POINT_CHARGE(Props):
             self.image_path = "pictures/minu_charge.png"
         self.image = pygame.image.load(self.image_path)
         self.image = pygame.transform.scale(self.image, (30, 30))
-        self.rect = self.image.get_rect(topleft=self.position)
+        self.rect = self.image.get_rect(topleft=self.position - np.array([15, 15]))
         if(movable):
             self.has_B = True
 
