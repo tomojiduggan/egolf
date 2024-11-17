@@ -1,13 +1,18 @@
 import Global_Var as Global_Var
 import numpy as np
 from physics.phys_utils import get_E_level
-from utils import draw_vector
+import pygame
+
+def draw_vector(surface, start, vector, color=(44, 242, 34), scale=1):
+    end = (start[0] + vector[0] * scale, start[1] + vector[1] * scale)
+    pygame.draw.line(surface, color, start, end, 2)
+    pygame.draw.circle(surface, color, end, 3)
 
 grid_spacing = Global_Var.GRID_SPACING
-width_start = 0 #TODO
-height_start = 0 #TODO
-width = Global_Var.SCREEN_WIDTH #TODO: Change to inner window width
-height = Global_Var.SCREEN_HEIGHT #TODO: Change to inner window height
+width_start = Global_Var.PLAYABLE_TL[0]
+height_start = Global_Var.PLAYABLE_TL[1]
+width = Global_Var.PLAYABLE_WIDTH
+height = Global_Var.PLAYABLE_HEIGHT
 
 def visualize_E(screen):
     """
@@ -18,7 +23,6 @@ def visualize_E(screen):
         for y in range(height_start, height_start + height, grid_spacing):
             poi = np.array([x, y])
             e_field = get_E_level(poi)
-            print(e_field)
             draw_vector(screen, poi, e_field, scale=1)
 
 

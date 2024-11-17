@@ -8,6 +8,19 @@ from runlevel import getLevel
 from map_design import free_design_screen
 # from game_design import draw_game
 
+from visualize import visualize_E
+from runlevel import getLevel
+from map_design import free_design_screen
+
+# Simulation Code
+# Controlled by buttons
+render_E_simulation = False
+render_B_simulation = False
+
+E_sim_layer = pygame.Surface((400, 400), pygame.SRCALPHA)
+B_sim_layer = pygame.Surface((400, 400), pygame.SRCALPHA)
+
+
 pygame.init()
 # Screen dimensions
 SCREEN_WIDTH = Global_Var.SCREEN_WIDTH
@@ -221,6 +234,7 @@ def run_launch(player):
     if pygame.mouse.get_pressed()[0] == 1 and norm < 100:
         player.velocity = LAUNCH_SPEED * direction / np.linalg.norm(direction)
 
+
 def draw_game():
     """Draw the game screen."""
     global paused  # Ensure `paused` is accessible
@@ -262,7 +276,14 @@ def draw_game():
             elif current_tile == 3:  # Swap Button
                 print("Swapping objects...")
             elif current_tile == 4:  # Extra Action Button E
-                print("Performing extra action E...")
+                print("Plotting the electric field")
+                # Turn on/off the electric field
+                render_E_simulation = not render_E_simulation
+
+                # After toggle if it is off state, clear the screen
+                if not render_E_simulation:
+                    E_sim_layer.fill((0, 0, 0, 0))
+
             elif current_tile == 5:  # Extra Action Button B
                 print("Performing extra action B...")
                 # extra_action_B()
@@ -288,6 +309,12 @@ def draw_game():
     # Update the display
     pygame.display.flip()
 
+def draw_E_sim_layer():
+    visualize_E(E_sim_layer)
+
+def draw_B_sim_layer():
+    #TODO
+    pass
 
 # Main loop
 running = True
@@ -305,6 +332,11 @@ while running:
         draw_game()
     elif game_state == "free_design":
         free_design_screen()
+
+    if render_E_simulation:
+        draw_E_sim_layer()
+    if render_B_simulation:
+        draw_B_sim_layer()
 
     # Update the display
     pygame.display.flip()
