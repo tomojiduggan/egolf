@@ -27,7 +27,7 @@ class REGION(Props):
     """
     Abstract class for rectangular region
     """
-    def __init__(self, tl, br, color=(255, 0, 0)):
+    def __init__(self, tl, br, color=(0, 204, 102)):
         super().__init__(np.array([(br[0]-tl[0])/2, (br[1]-tl[1])/2]), False)
         self.tl = tl
         self.br = br
