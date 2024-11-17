@@ -167,7 +167,7 @@ def free_design_screen():
             current_tile = button_count  # Update current selected tile if clicked 
             # Call the corresponding function based on the button clicked
             if current_tile == 0:  # Add Wire
-                wire = WIRE((100, 100), (150, 150), 2)
+                wire = WIRE(np.array([100, 100]), np.array([150, 150]), 2)
                 props_list.append(wire)
             elif current_tile == 1:  # Add Charge
                 charge = POINT_CHARGE((200, 200), 1, False)
