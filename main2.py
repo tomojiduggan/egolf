@@ -187,12 +187,13 @@ def free_design_screen():
     pygame.display.flip()
 
 def draw_win_page():
-     global game_state
-     my_img = pygame.transform.scale_by(win_img, 0.75)
-     screen.blit(my_img, ((SCREEN_WIDTH - my_img.get_width()) / 2, (SCREEN_HEIGHT - my_img.get_height()) / 2))
-     print(pygame.mouse.get_pos())
-     mouse_x, mouse_y = pygame.mouse.get_pos()
-     if(pygame.mouse.get_pressed()[0] == 1):
+    global game_state
+    global game_level
+    my_img = pygame.transform.scale_by(win_img, 0.75)
+    screen.blit(my_img, ((SCREEN_WIDTH - my_img.get_width()) / 2, (SCREEN_HEIGHT - my_img.get_height()) / 2))
+    print(pygame.mouse.get_pos())
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+    if(pygame.mouse.get_pressed()[0] == 1):
         if(mouse_x > 158 and mouse_x < 354 and mouse_y > 371 and mouse_y < 456):
             # go back
             render_E_simulation = False
@@ -200,15 +201,13 @@ def draw_win_page():
             global game_state
             game_state = "start_page"
         if(mouse_x > 447 and mouse_x < 642 and mouse_y > 371 and mouse_y < 456):
-             # next nevel
-             game_stop()
-             global game_level
-             game_level += 1
-             game_state = "game"
-             getLevel(game_levels[game_level])
+                # next nevel
+                game_level += 1
+                game_state = "game"
+                game_restart()
 
-    
-     pygame.display.flip()
+
+    pygame.display.flip()
 
 
 def draw_lose_page():
