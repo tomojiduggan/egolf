@@ -149,6 +149,12 @@ def draw_game():
     if current_tile != -1:  # Only highlight if a button is selected
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect, 3)
 
+    for object in ALL_PROPS:
+        object.update()
+        object.draw(screen)
+        if(isinstance(object, PLAYER)):
+            player = object
+    player.handle_collisions()
 
 
 

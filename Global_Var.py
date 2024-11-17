@@ -10,6 +10,7 @@ DELTA_T = 0.05
 
 Q = 1.2
 FRICTION = 3
+LAUNCH_SPEED = 20
 
 ALL_PROPS = []
 
