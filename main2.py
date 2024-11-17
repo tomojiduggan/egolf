@@ -146,17 +146,18 @@ def draw_start_page():
 
 # FREE DESIGN SECTION
 props_list = []
+player_add = False
 # Create the free design screen
 def free_design_screen():
     """Draw the free design screen."""
-    global game_state, props_list
+    global game_state, props_list, player_add
     screen.fill(WHITE)
 
     # Draw existing props
     for prop in props_list:
         prop.draw(screen)
     
-    button_list = [add_wire_button, add_charge_button, add_solenoid_button, add_block_button, add_back_button, add_save_button]
+    button_list = [add_wire_button, add_charge_button, add_solenoid_button, add_block_button, add_back_button, add_save_button, add_player_button]
 
     # Initialize game state
     current_tile = -1
@@ -170,17 +171,21 @@ def free_design_screen():
                 wire = WIRE(np.array([100, 100]), np.array([150, 150]), 2)
                 props_list.append(wire)
             elif current_tile == 1:  # Add Charge
-                charge = POINT_CHARGE((200, 200), 1, False)
+                charge = POINT_CHARGE(np.array([200, 200]), 1, False)
                 props_list.append(charge)
             elif current_tile == 2:  # Add Solenoid
-                solenoid = SOLENOID(50, (200, 200))
+                solenoid = SOLENOID(50, np.array([200, 200]))
                 props_list.append(solenoid)
             elif current_tile == 3:  # Add Block
                 pass
             elif current_tile == 4:  # Back to Title
                 back_to_title()
-            elif current_tile == 5:  # Save (currently no action)
+            elif current_tile == 5: # Save (currently no action)
                 pass
+            elif current_tile == 6: # Add Player
+                player_add = True
+                player = PLAYER(np.array([200, 200]))
+                props_list.append(player)
     # Highlight the selected button with a gray border
     if current_tile != -1:  
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect,3)  # Add padding around the button
