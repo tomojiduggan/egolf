@@ -164,20 +164,20 @@ def free_design_screen():
         if button.draw(screen):  # Draw the button and check if clicked
             current_tile = button_count  # Update current selected tile if clicked 
             # Call the corresponding function based on the button clicked
-            if current_tile == 0:  # Restart Button
+            if current_tile == 0:  # Add Wire
                 wire = WIRE((100, 100), (150, 150), 2)
                 props_list.append(wire)
-            elif current_tile == 1:  # Pause Button
+            elif current_tile == 1:  # Add Charge
                 charge = POINT_CHARGE((200, 200), 1, False)
                 props_list.append(charge)
-            elif current_tile == 2:  # Place Button
-                solenoid = SOLENOID(50, 1, [0,0,1], [200,200])
+            elif current_tile == 2:  # Add Solenoid
+                solenoid = SOLENOID(50, (200, 200))
                 props_list.append(solenoid)
-            elif current_tile == 3:  # Swap Button
+            elif current_tile == 3:  # Add Block
                 pass
-            elif current_tile == 4:  # Extra Action Button E
+            elif current_tile == 4:  # Back to Title
                 back_to_title()
-            elif current_tile == 5:  # Extra Action Button B
+            elif current_tile == 5:  # Save (currently no action)
                 pass
     # Highlight the selected button with a gray border
     if current_tile != -1:  
@@ -332,8 +332,9 @@ while running:
             for object in ALL_PROPS:
                 if not (isinstance(object, PLAYER)):
                     handle_event(object,event)
-
-        
+        if game_state == "free_design":
+            for object in ALL_PROPS:
+                object.handle_event(event)
 
     # Update screen based on the current state
     if game_state == "title":

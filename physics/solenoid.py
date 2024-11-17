@@ -129,7 +129,7 @@ clock = pygame.time.Clock()
 DELTA_T = 0.05  # Time step for simulation (in seconds)
 
 # Create the solenoid and the moving charge
-solenoid_image_path = "solenoid.png"  # Path to your solenoid image
+solenoid_image_path = "pictures/solenoid.png"  # Path to your solenoid image
 solenoid = Solenoid(num_loops=500, current=50.0, direction=[0, 0, 1], position=(300, 300),image_path=solenoid_image_path)
 moving_charge = POINT_CHARGE(position=[500, 400], charge=10.0, movable=True, velocity=[10.0, 0.0])
 
