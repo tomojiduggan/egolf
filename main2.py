@@ -57,7 +57,8 @@ button_y = (SCREEN_HEIGHT - button_height) // 2
 
 # Game state
 game_state = "title"
-game_level = "level1.json"
+game_level = 0
+game_levels = ["level1.json", "level2.json", "level3.json"]
 
 
 run = True
@@ -82,7 +83,7 @@ def game_stop():
 
 def game_restart():
     game_stop()
-    getLevel(game_level)
+    getLevel(game_levels[game_level])
 
 # Game pages
 #create empty tile list
@@ -133,13 +134,14 @@ def draw_title_screen():
 
 def draw_start_page():
     """Draw the start page."""
-    global game_state  
+    global game_state, game_level
+    game_level = 0
     screen.fill(WHITE)
     if new_game.draw(screen):
         game_stop()
         game_state = "game"
-        game_level = "level1.json"
-        getLevel(game_level)
+        game_level = 0
+        getLevel(game_levels[game_level])
     if free_design.draw(screen):
         game_state = "free_design"
 
@@ -198,9 +200,27 @@ def free_design_screen():
     pygame.display.flip()
 
 def draw_win_page():
-     global game_state
-     screen.blit(win_img, (0, 0))
-     pygame.display.flip()
+    global game_state
+    global game_level
+    my_img = pygame.transform.scale_by(win_img, 0.75)
+    screen.blit(my_img, ((SCREEN_WIDTH - my_img.get_width()) / 2, (SCREEN_HEIGHT - my_img.get_height()) / 2))
+    print(pygame.mouse.get_pos())
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+    if(pygame.mouse.get_pressed()[0] == 1):
+        if(mouse_x > 158 and mouse_x < 354 and mouse_y > 371 and mouse_y < 456):
+            # go back
+            render_E_simulation = False
+            game_stop()
+            global game_state
+            game_state = "start_page"
+        if(mouse_x > 447 and mouse_x < 642 and mouse_y > 371 and mouse_y < 456):
+                # next nevel
+                game_level += 1
+                game_state = "game"
+                game_restart()
+
+
+    pygame.display.flip()
 
 
 def draw_lose_page():
@@ -209,10 +229,14 @@ def draw_lose_page():
     render_E_simulation = False
     global render_B_simulation
     render_B_simulation = False
-    screen.fill(WHITE)
-    lose_text = font.render("LOSE", True, RED)
-    text_rect = lose_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-    screen.blit(lose_text, text_rect)  # Draw the text on the screen
+    screen.blit(lose_img, (0,0))
+    if retry_btn.draw(screen): 
+         game_state = 'game'
+         game_restart()
+    # screen.fill(WHITE)
+    # lose_text = font.render("LOSE", True, RED)
+    # text_rect = lose_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+    # screen.blit(lose_text, text_rect)  # Draw the text on the screen
     pygame.display.flip()  # Update the display
 
 # State where clicking will launch ball

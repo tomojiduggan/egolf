@@ -42,5 +42,13 @@ E_button = button.Button(450, SCREEN_HEIGHT - 100, E_img, 0.3)
 B_img = pygame.image.load('pictures/B_btn.png').convert_alpha()
 B_button = button.Button(550, SCREEN_HEIGHT - 100, B_img, 0.3)
 # load win image
-win_img = pygame.image.load('pictures/win.png').convert_alpha()
+win_img = pygame.image.load('pictures/win.png')
 win_img = pygame.transform.scale(win_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+# load lose image
+lose_img = pygame.image.load('pictures/fail_page.png')
+lose_img = pygame.transform.scale(lose_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+retry_img = pygame.image.load('pictures/retry_btn.png')
+retry_btn = button.Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT-150, retry_img, 0.5)
+
+
