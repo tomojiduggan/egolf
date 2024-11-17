@@ -20,5 +20,9 @@ def getLevel(filename):
     walls = []
     for wall in levelObj["walls"]:
         walls.append(WALL(np.array(wall[0]), np.array(wall[1])))
+
+    win = []
+    for win in levelObj["win"]:
+        win.append(WIN(np.array(win[0]), np.array(win[1])))
     
     return player

@@ -153,6 +153,8 @@ def draw_start_page():
     screen.fill(WHITE)
     if new_game.draw(screen):
         game_state = "game"
+        # print("game start")
+        getLevel("level1.json")
     if free_design.draw(screen):
         game_state = "free_design"
 
@@ -248,9 +250,14 @@ def draw_game():
     # Highlight the selected tile with a gray border
     if current_tile != -1:  # Only highlight if a button is selected
         pygame.draw.rect(screen, GRAY, button_list[current_tile].rect, 3)
-
-
-
+    
+    # PHYSICS PART, DRAW OBJECTS
+    for object in ALL_PROPS:
+        object.update()
+        object.draw(screen)
+        if(isinstance(object, PLAYER)):
+            player = object
+    player.handle_collisions()
 
     # Update the display
     pygame.display.flip()
