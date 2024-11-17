@@ -246,9 +246,7 @@ def draw_win_page():
                 game_state = "game"
 
                 game_restart()
-
-    
-     pygame.display.flip()
+    pygame.display.flip()
 
 
 def draw_lose_page():
