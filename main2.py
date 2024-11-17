@@ -63,6 +63,7 @@ game_level = "level1.json"
 run = True
 paused = False
 render_E_simulation = False
+render_B_simulation = False
 
 # Button functions
 def pause_game():
@@ -150,6 +151,17 @@ def free_design_screen():
     global game_state, props_list
     screen.fill(WHITE)
 
+    # Load the boundary. Not the props
+    top_boundary = WALL(np.array([0, 0]), np.array([800, 13]))
+    left_boundary = WALL(np.array([0, 0]), np.array([13, 486]))
+    bot_boundary = WALL(np.array([0, 484]), np.array([800, 497]))
+    right_boundary = WALL(np.array([787, 0]), np.array([800, 486]))
+
+    top_boundary.draw(screen)
+    left_boundary.draw(screen)
+    bot_boundary.draw(screen)
+    right_boundary.draw(screen)
+
     # Draw existing props
     for prop in props_list:
         prop.draw(screen)
@@ -165,7 +177,7 @@ def free_design_screen():
             current_tile = button_count  # Update current selected tile if clicked 
             # Call the corresponding function based on the button clicked
             if current_tile == 0:  # Add Wire
-                wire = WIRE((100, 100), (150, 150), 2)
+                wire = WIRE(np.array([100, 100]), np.array([150, 150]), 2)
                 props_list.append(wire)
             elif current_tile == 1:  # Add Charge
                 charge = POINT_CHARGE((200, 200), 1, False)

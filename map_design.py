@@ -98,7 +98,7 @@ def back_to_title():
     game_state = 'start_page'
     
 
-global props_list 
+global props_list # to store all design prop
 props_list = []
 
 
