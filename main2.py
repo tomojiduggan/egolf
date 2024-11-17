@@ -66,6 +66,7 @@ game_levels = ["level1.json", "level2.json", "level3.json"]
 run = True
 paused = False
 render_E_simulation = False
+render_B_simulation = False
 
 # Button functions
 def pause_game():
@@ -243,6 +244,10 @@ def free_design_screen():
 def draw_win_page():
     global game_state
     global game_level
+    global render_B_simulation
+    render_B_simulation = False
+    global render_E_simulation 
+    render_E_simulation = False
     my_img = pygame.transform.scale_by(win_img, 0.75)
     screen.blit(my_img, ((SCREEN_WIDTH - my_img.get_width()) / 2, (SCREEN_HEIGHT - my_img.get_height()) / 2))
     mouse_x, mouse_y = pygame.mouse.get_pos()

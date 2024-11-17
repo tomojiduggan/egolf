@@ -284,7 +284,7 @@ class SOLENOID(Props):
     # Removed direction (Say +I is counterclockwise, say -I is clockwise)
     def __init__(self, position, current, movable=True):
         super().__init__(position, movable)
-        self.current = current
+        self.current = current * I * 50*200
         self.position = position 
         self.image_path = 'pictures/solenoid.png'
         self.image = pygame.image.load(self.image_path)
@@ -321,5 +321,5 @@ class SOLENOID(Props):
         B_magnitude *= decay_factor
 
         # Assume the field is along z-axis (out of plane)
-        B_field = np.array([0, 0, B_magnitude])
+        B_field = B_magnitude
         return B_field
