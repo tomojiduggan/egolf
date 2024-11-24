@@ -183,7 +183,9 @@ class POINT_CHARGE(Props):
     def b_field(self, r):
         if(not self.movable):
             return 0
-        return self.charge * np.cross(self.velocity, self.position - r) / (np.linalg.norm(self.position - r) ** 3)
+        # return self.charge * np.cross(self.velocity, self.position - r) / (np.linalg.norm(self.position - r) ** 3)
+        v = self.charge * np.cross(np.array([self.velocity[0], self.velocity[1], 0]),np.array([0,0,1])) / (np.linalg.norm(self.position - r) ** 3)
+        return v[:,2]
 
     def get_force(self):
         e_force = self.charge * net_E(self.position, self.prop_id)
